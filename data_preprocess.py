@@ -20,6 +20,9 @@ for folder_path in ["./data_dir/t1_mr_norm/", "./data_dir/t1_ct_norm/"]:
 
 largest_z_MR = 0
 largest_z_CT = 0
+smallest_z_MR = 1000
+smallest_z_CT = 1000
+
 
 for file_path in MR_list:
 
@@ -35,6 +38,8 @@ for file_path in MR_list:
     print(MR_data.shape)
     if MR_data.shape[2] > largest_z_MR:
         largest_z_MR = MR_data.shape[2]
+    if MR_data.shape[2] < smallest_z_MR:
+        smallest_z_MR = MR_data.shape[2]
     # MR_mask = nib.load(file_path.replace("mr.nii.gz", "mask.nii.gz")).get_fdata()
     # MR_data = MR_data[MR_mask.astype(bool)]
     # data_min = np.amin(MR_data)
@@ -67,6 +72,8 @@ for file_path in CT_list:
     print(CT_data.shape)
     if CT_data.shape[2] > largest_z_CT:
         largest_z_CT = CT_data.shape[2]
+    if CT_data.shape[2] < smallest_z_CT:
+        smallest_z_CT = CT_data.shape[2]
     # CT_mask = nib.load(file_path.replace("ct.nii.gz", "mask.nii.gz")).get_fdata()
     # CT_data = CT_data[CT_mask.astype(bool)]
     # data_min = np.amin(CT_data)
@@ -86,4 +93,5 @@ for file_path in CT_list:
 
 # np.save("./data/t1_ct_norm/CT_range.npy", [CT_range_min, CT_range_max, CT_range_q999])
 
-print(largest_z_MR, largest_z_CT)
+print("largest_z_MR", largest_z_MR, "smallest_z_MR", smallest_z_MR)
+print("largest_z_CT", largest_z_CT, "smallest_z_CT", smallest_z_CT)
