@@ -24,8 +24,7 @@ for file_path in MR_list:
     MR_file = nib.load(file_path)
     MR_data = MR_file.get_fdata()
     MR_mask = nib.load(file_path.replace("mr.nii.gz", "mask.nii.gz")).get_fdata()
-    print(MR_data)
-    MR_data = MR_data[MR_mask]
+    MR_data = MR_data[MR_mask.astype(bool)]
     data_min = np.amin(MR_data)
     data_max = np.amax(MR_data)
     data_q999 = np.percentile(MR_data, 99.9)
@@ -48,7 +47,7 @@ for file_path in CT_list:
     CT_file = nib.load(file_path)
     CT_data = CT_file.get_fdata()
     CT_mask = nib.load(file_path.replace("ct.nii.gz", "mask.nii.gz")).get_fdata()
-    CT_data = CT_data[CT_mask]
+    CT_data = CT_data[CT_mask.astype(bool)]
     data_min = np.amin(CT_data)
     data_max = np.amax(CT_data)
     data_q999 = np.percentile(CT_data, 99.9)
