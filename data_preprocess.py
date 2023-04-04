@@ -30,7 +30,7 @@ for file_path in MR_list:
     MR_file = nib.load(file_path)
     MR_data = MR_file.get_fdata()
     MR_mask = nib.load(file_path.replace("mr.nii.gz", "mask.nii.gz")).get_fdata()
-    MR_data = MR_data[MR_mask.astype(bool)]
+    # MR_data = MR_data[MR_mask.astype(bool)]
     # data_min = np.amin(MR_data)
     # data_max = np.amax(MR_data)
     # data_q999 = np.percentile(MR_data, 99.9)
