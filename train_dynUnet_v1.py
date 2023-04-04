@@ -128,6 +128,10 @@ data_division_dict = {
     "test_list_X" : test_list}
 np.save(train_dict["save_folder"]+"data_division.npy", data_division_dict)
 
+print("Train: ", len(train_list))
+print("Val: ", len(val_list))
+print("Test: ", len(test_list))
+
 # ==================== training ====================
 
 best_val_loss = 100
@@ -155,6 +159,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             model.eval()
 
         random.shuffle(file_list)
+        n_file = len(file_list)
         
         case_loss = np.zeros((len(file_list)))
 
@@ -167,7 +172,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             x_path = file_path
             y_path = file_path.replace("mr", "ct")
             file_name = os.path.basename(file_path)
-            print(iter_tag + " ===> Epoch[{:03d}]: --->".format(idx_epoch+1), x_path, "<---", end="")
+            print(iter_tag + " ===> Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, cnt_file+1, n_file), x_path, "<---", end="")
             x_file = nib.load(x_path)
             y_file = nib.load(y_path)
             x_data = x_file.get_fdata()
