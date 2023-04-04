@@ -10,13 +10,13 @@ for folder_path in ["./data/t1_mr_norm/", "./data/t1_ct_norm/"]:
     if not os.path.exists(folder_path):
         os.mkdir(folder_path)
 
-MR_range_min = []
-MR_range_max = []
-MR_range_q999 = []
+# MR_range_min = []
+# MR_range_max = []
+# MR_range_q999 = []
 
-CT_range_min = []
-CT_range_max = []
-CT_range_q999 = []
+# CT_range_min = []
+# CT_range_max = []
+# CT_range_q999 = []
 
 for file_path in MR_list:
 
@@ -29,7 +29,7 @@ for file_path in MR_list:
     # print(file_name, end=" -> ")
     MR_file = nib.load(file_path)
     MR_data = MR_file.get_fdata()
-    MR_mask = nib.load(file_path.replace("mr.nii.gz", "mask.nii.gz")).get_fdata()
+    # MR_mask = nib.load(file_path.replace("mr.nii.gz", "mask.nii.gz")).get_fdata()
     # MR_data = MR_data[MR_mask.astype(bool)]
     # data_min = np.amin(MR_data)
     # data_max = np.amax(MR_data)
