@@ -3,10 +3,10 @@ import numpy as np
 import os
 import glob
 
-MR_list = sorted(glob.glob("./data/Task1/*/*/mr.nii.gz"))
-CT_list = sorted(glob.glob("./data/Task1/*/*/ct.nii.gz"))
+MR_list = sorted(glob.glob("./data_dir/Task1/*/*/mr.nii.gz"))
+CT_list = sorted(glob.glob("./data_dir/Task1/*/*/ct.nii.gz"))
 
-for folder_path in ["./data/t1_mr_norm/", "./data/t1_ct_norm/"]:
+for folder_path in ["./data_dir/t1_mr_norm/", "./data_dir/t1_ct_norm/"]:
     if not os.path.exists(folder_path):
         os.mkdir(folder_path)
 
