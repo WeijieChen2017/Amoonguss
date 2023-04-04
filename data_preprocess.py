@@ -42,7 +42,7 @@ for file_path in MR_list:
     # NAC_data = np.resize(NAC_data, (256, 256, NAC_data.shape[2]))
     MR_data = MR_data / 3000
     new_MR_file = nib.Nifti1Image(MR_data, MR_file.affine, MR_file.header)
-    new_save_name = "./data/t1_mr_norm/" + new_filename + ".gz"
+    new_save_name = "./data/t1_mr_norm/" + new_filename
     nib.save(new_MR_file, new_save_name)
 
 # np.save("./data/t1_mr_norm/MR_range.npy", [MR_range_min, MR_range_max, MR_range_q999])
@@ -51,7 +51,7 @@ for file_path in CT_list:
 
     path_parts = file_path.split(os.sep)
     wildcard1, wildcard2 = path_parts[3], path_parts[4]
-    new_filename = f"{wildcard1}_{wildcard2}_mr.nii.gz"
+    new_filename = f"{wildcard1}_{wildcard2}_ct.nii.gz"
     print(new_filename, end=" -> ")
 
     # file_name = os.path.basename(file_path)
