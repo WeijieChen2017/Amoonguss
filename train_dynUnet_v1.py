@@ -59,8 +59,8 @@ train_dict["model_related"]["num_res_units"] = 6
             
 
 
-train_dict["folder_X"] = "./data_dir/t1_mr_norm"
-train_dict["folder_Y"] = "./data_dir/t1_ct_norm"
+train_dict["folder_X"] = "./data_dir/t1_mr_norm/"
+train_dict["folder_Y"] = "./data_dir/t1_ct_norm/"
 train_dict["val_ratio"] = 0.3
 train_dict["test_ratio"] = 0.2
 
