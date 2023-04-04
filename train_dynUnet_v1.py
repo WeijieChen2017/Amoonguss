@@ -23,6 +23,7 @@ train_dict["random_seed"] = model_list[current_model_idx][3]
 gpu_list = ','.join(str(x) for x in train_dict["gpu_ids"])
 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
 print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
+import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 import glob
@@ -33,7 +34,7 @@ import numpy as np
 import nibabel as nib
 import torch.nn as nn
 
-import torch
+# import torch
 import torchvision
 import requests
 
