@@ -44,7 +44,7 @@ from monai.networks.nets.dynunet import DynUnet as  dynunet
 # ==================== dict and config ====================
 
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
-train_dict["input_size"] = [96, 96, 96]
+train_dict["input_size"] = [64, 64, 64]
 train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["dropout"] = 0
