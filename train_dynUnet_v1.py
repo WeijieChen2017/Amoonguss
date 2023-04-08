@@ -54,12 +54,12 @@ train_dict["model_related"] = {}
 train_dict["model_related"]["spatial_dims"] = 3
 train_dict["model_related"]["in_channels"] = 1
 train_dict["model_related"]["out_channels"] = 1
-train_dict["model_related"]["kernel_size"] = [3, 3, 3, 1, 1]
-train_dict["model_related"]["strides"] = [2, 2, 2, 1, 1]
-train_dict["model_related"]["filters"] = [64, 128, 256, 384, 512]
+train_dict["model_related"]["kernel_size"] = [3, 3, 3, 3]
+train_dict["model_related"]["strides"] = [2, 2, 2, 2]
+train_dict["model_related"]["filters"] = [64, 128, 256, 384]
 train_dict["model_related"]["norm_name"] = "instance"
 train_dict["model_related"]["deep_supervision"] = True
-train_dict["model_related"]["deep_supr_num"] = 3
+train_dict["model_related"]["deep_supr_num"] = 4
 
 train_dict["folder_X"] = "./data_dir/t1_mr_norm/"
 train_dict["folder_Y"] = "./data_dir/t1_ct_norm/"
@@ -223,7 +223,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
 
             # save the y_hat for observation
             y_hat = y_hat.cpu().detach()
-            torch.save(y_hat, train_dict["save_folder"]+"npy/Epoch[{:03d}]_Case[{}]_".format(idx_epoch+1, file_name)+iter_tag+"_y_hat.pt")
+            torch.save(y_hat, train_dict["save_folder"]+"npy/y_hat.pt")
             exit()
 
 
