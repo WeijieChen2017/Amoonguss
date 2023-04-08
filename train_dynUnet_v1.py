@@ -1,10 +1,11 @@
+
 import os
 import time
 
 model_list = [
-    ["unet_v1_8066", [7], "unet", 8066],
-    ["unet_v1_5541", [7], "unet", 5541],
-    ["unet_v1_7363", [7], "unet", 7363],
+    ["dynunet_v1_8066", [7], "dynunet", 8066],
+    ["dynunet_v1_5541", [7], "dynunet", 5541],
+    ["dynunet_v1_7363", [7], "dynunet", 7363],
     # ["dynunet_v1", [7], "dynunet"],
 ]
 
@@ -44,7 +45,7 @@ from monai.networks.nets.dynunet import DynUnet as  dynunet
 # ==================== dict and config ====================
 
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
-train_dict["input_size"] = [64, 64, 64]
+train_dict["input_size"] = [80, 80, 80]
 train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["dropout"] = 0
@@ -53,11 +54,12 @@ train_dict["model_related"] = {}
 train_dict["model_related"]["spatial_dims"] = 3
 train_dict["model_related"]["in_channels"] = 1
 train_dict["model_related"]["out_channels"] = 1
-train_dict["model_related"]["channels"] = (32, 64, 128, 256)
-train_dict["model_related"]["strides"] = (2, 2, 2)
-train_dict["model_related"]["num_res_units"] = 6
-            
-
+train_dict["model_related"]["kernel_size"] = [3, 3, 3, 1, 1]
+train_dict["model_related"]["strides"] = [2, 2, 2, 1, 1]
+train_dict["model_related"]["filters"] = [64, 128, 256, 384, 512]
+train_dict["model_related"]["norm_name"] = "instance"
+train_dict["model_related"]["deep_supervision"] = True
+train_dict["model_related"]["deep_supr_num"] = 3
 
 train_dict["folder_X"] = "./data_dir/t1_mr_norm/"
 train_dict["folder_Y"] = "./data_dir/t1_ct_norm/"
@@ -91,7 +93,21 @@ if train_dict["model_term"] == "unet":
         channels=train_dict["model_related"]["channels"],
         strides=train_dict["model_related"]["strides"],
         num_res_units=train_dict["model_related"]["num_res_units"]
-        )
+    )
+
+if train_dict["model_term"] == "dynunet":
+    model = dynunet(
+        spatial_dims=train_dict["model_related"]["spatial_dims"],
+        in_channels=train_dict["model_related"]["in_channels"],
+        out_channels=train_dict["model_related"]["out_channels"],
+        kernel_size=train_dict["model_related"]["kernel_size"],
+        strides=train_dict["model_related"]["strides"],
+        upsample_kernel_size=train_dict["model_related"]["strides"][1:],
+        filters=train_dict["model_related"]["filters"],
+        norm_name=train_dict["model_related"]["norm_name"],
+        deep_supervision=train_dict["model_related"]["deep_supervision"],
+        deep_supr_num=train_dict["model_related"]["deep_supr_num"],
+    )
 
 model.train()
 model = model.to(device)
@@ -204,6 +220,13 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 
             optimizer.zero_grad()
             y_hat = model(batch_x)
+
+            # save the y_hat for observation
+            y_hat = y_hat.cpu().detach()
+            torch.save(y_hat, train_dict["save_folder"]+"npy/Epoch[{:03d}]_Case[{}]_".format(idx_epoch+1, file_name)+iter_tag+"_y_hat.pt")
+            exit()
+
+
             loss = criterion(y_hat, batch_y)
             if isTrain:
                 loss.backward()
@@ -221,7 +244,8 @@ for idx_epoch_new in range(train_dict["epochs"]):
             # np.save(train_dict["save_folder"]+"npy/Epoch[{:03d}]_Case[{}]_".format(idx_epoch+1, file_name)+iter_tag+"_z.npy", y_hat.cpu().detach().numpy())
 
             # torch.save(model, train_dict["save_folder"]+"model_curr.pth".format(idx_epoch + 1))
-            torch.save(model.state_dict(), train_dict["save_folder"]+"model_curr_{}.pth".format(idx_epoch + 1))
+            torch.save(model.state_dict(), train_dict["save_folder"]+"model_curr.pth")
+            torch.save(optimizer.state_dict(), train_dict["save_folder"]+"optim_curr.pth")
             if np.mean(case_loss) < best_val_loss:
                 # save the best model
                 torch.save(model.state_dict(), train_dict["save_folder"]+"model_best_{:03d}.pth".format(idx_epoch + 1))
