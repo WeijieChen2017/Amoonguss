@@ -59,7 +59,7 @@ train_dict["model_related"]["strides"] = [2, 2, 2, 2]
 train_dict["model_related"]["filters"] = [64, 128, 256, 384]
 train_dict["model_related"]["norm_name"] = "instance"
 train_dict["model_related"]["deep_supervision"] = True
-train_dict["model_related"]["deep_supr_num"] = 4
+train_dict["model_related"]["deep_supr_num"] = 3
 
 train_dict["folder_X"] = "./data_dir/t1_mr_norm/"
 train_dict["folder_Y"] = "./data_dir/t1_ct_norm/"
