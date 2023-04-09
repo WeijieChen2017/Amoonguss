@@ -49,7 +49,7 @@ train_dict["alpha_dropout_consistency"] = 1
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["input_size"] = [64, 64, 64]
 train_dict["epochs"] = 200
-train_dict["batch"] = 16
+train_dict["batch"] = 32
 train_dict["target_model"] = "./project_dir/unet_v1_8066/model_best_181.pth"
 train_dict["base_model_folder"] = "./project_dir/unet_v1_8066/"
 
