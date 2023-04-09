@@ -2,8 +2,10 @@ import os
 import time
 
 model_list = [
-    ["unet_bdo_8066_4444222", [7], "unet", 8066, [4,4,4,4,2,2,2]],
-    ["unet_bdo_9729_4444222", [7], "unet", 9729, [4,4,4,4,2,2,2]],
+    ["unet_bdo_8066_4444222", [3], "unet", 8066, [4,4,4,4,2,2,2]],
+    ["unet_bdo_9729_4444222", [3], "unet", 9729, [4,4,4,4,2,2,2]],
+    ["unet_bdo_8066_8888444", [3], "unet", 8066, [8,8,8,8,4,4,4]],
+    ["unet_bdo_9729_8888444", [3], "unet", 9729, [8,8,8,8,4,4,4]],
 ]
 
 print("Model index: ", end="")
@@ -49,7 +51,7 @@ train_dict["alpha_dropout_consistency"] = 1
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["input_size"] = [64, 64, 64]
 train_dict["epochs"] = 200
-train_dict["batch"] = 32
+train_dict["batch"] = 16
 train_dict["target_model"] = "./project_dir/unet_v1_8066/model_best_181.pth"
 train_dict["base_model_folder"] = "./project_dir/unet_v1_8066/"
 
