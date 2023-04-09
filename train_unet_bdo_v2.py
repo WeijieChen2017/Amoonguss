@@ -120,7 +120,7 @@ for idx_alter_block in range(max_alter_block):
     swm["up1."+str(idx_alter_block)]     = "model.2"
 
 train_dict["state_weight_mapping"] = swm
-pretrain_state = torch.load(train_dict["target_model"]).state_dict()
+pretrain_state = torch.load(train_dict["target_model"])
 
 model_state_keys = model.state_dict().keys()
 new_model_state = {}
