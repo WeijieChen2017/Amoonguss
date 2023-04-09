@@ -9,8 +9,8 @@ import numpy as np
 import nibabel as nib
 import glob
 
-MR_list = sorted(glob.glob("./data_dir/Task11_SynthRad_task1/t1_ct_norm/*.nii.gz"))
-CT_list = sorted(glob.glob("./data_dir/Task11_SynthRad_task1/t1_mr_norm/*.nii.gz"))
+CT_list = sorted(glob.glob("./data_dir/Task11_SynthRad_task1/t1_ct_norm/*.nii.gz"))
+MR_list = sorted(glob.glob("./data_dir/Task11_SynthRad_task1/t1_mr_norm/*.nii.gz"))
 
 fake_dataset_folder = "./data_dir/Task11_SynthRad_task1_fake/"
 if not os.path.exists(fake_dataset_folder):
