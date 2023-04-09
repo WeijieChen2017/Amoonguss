@@ -153,9 +153,13 @@ optim = torch.optim.AdamW(
 # ==================== data division ====================
 
 data_div = np.load(os.path.join(train_dict["base_model_folder"], "data_division.npy"), allow_pickle=True)[()]
-train_list = data_div["train"]
-val_list = data_div["val"]
-test_list = data_div["test"]
+train_list = data_div["train_list_X"]
+val_list = data_div["val_list_X"]
+test_list = data_div["test_list_X"]
+
+print("Train: ", len(train_list))
+print("Val: ", len(val_list))
+print("Test: ", len(test_list))
 
 # ==================== training ====================
 
@@ -183,6 +187,7 @@ for idx_epoch_new in range(train_dict["epochs"]):
             model.eval()
 
         random.shuffle(file_list)
+        n_file = len(file_list)
         
         case_loss = np.zeros((len(file_list), 2))
 
@@ -192,10 +197,9 @@ for idx_epoch_new in range(train_dict["epochs"]):
         for cnt_file, file_path in enumerate(file_list):
             
             x_path = file_path
-            y_path = file_path.replace("x", "y")
+            y_path = file_path.replace("mr", "ct")
             file_name = os.path.basename(file_path)
-            print(iter_tag + " ===> Epoch[{:03d}]-[{:03d}]/[{:03d}]: --->".format(
-                idx_epoch+1, cnt_file+1, len(file_list)), x_path, "<---", end="")
+            print(iter_tag + " ===> Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, cnt_file+1, n_file), x_path, "<---", end="")
             x_file = nib.load(x_path)
             y_file = nib.load(y_path)
             x_data = x_file.get_fdata()
