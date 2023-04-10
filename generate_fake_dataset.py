@@ -28,9 +28,10 @@ for file_path in MR_list:
     print(file_name, end=" -> ")
     MR_file = nib.load(file_path)
     MR_data = MR_file.get_fdata()
-    print(MR_data.shape)
+    print(MR_data.shape, end=" -> ")
     #save the MR_data as npy file
     np.save(fake_mr_folder + file_name[:-7], MR_data)
+    print(fake_mr_folder + file_name[:-7], "saved")
     # new_MR_data = np.zeros(MR_data.shape)
     # new_MR_file = nib.Nifti1Image(new_MR_data, MR_file.affine, MR_file.header)
     # new_save_name = fake_mr_folder + file_name
@@ -41,9 +42,10 @@ for file_path in CT_list:
     print(file_name, end=" -> ")
     CT_file = nib.load(file_path)
     CT_data = CT_file.get_fdata()
-    print(CT_data.shape)
+    print(CT_data.shape, end=" -> ")
     # save the CT_data as npy file
     np.save(fake_ct_folder + file_name[:-7], CT_data)
+    print(fake_ct_folder + file_name[:-7], "saved")
     # new_CT_data = np.zeros(CT_data.shape)
     # new_CT_file = nib.Nifti1Image(new_CT_data, CT_file.affine, CT_file.header)
     # new_save_name = fake_ct_folder + file_name
