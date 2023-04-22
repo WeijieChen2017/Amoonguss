@@ -95,7 +95,7 @@ model = unet(
     num_res_units=train_dict["model_related"]["num_res_units"]
     )
 
-model.train()
+model.load_state_dict(model_state_dict)
 
 # ==================== data division ====================
 
@@ -136,7 +136,6 @@ for cnt_file, file_path in enumerate(file_list):
     y_data_denorm = denorm_CT(y_data)
 
     ax, ay, az = x_data.shape
-    case_loss = 0
 
     input_data = x_data
     input_data = np.expand_dims(input_data, (0,1))
@@ -161,9 +160,12 @@ for cnt_file, file_path in enumerate(file_list):
         curr_pred = np.squeeze(y_hat.cpu().detach().numpy())
         curr_pred_denorm = denorm_CT(curr_pred)
         metric_list = cal_rmse_mae_ssim_psnr_acut_dice(curr_pred_denorm, y_data_denorm)
+        metric_keys = ["RMSE", "MAE", "SSIM", "PSNR", "ACUT", "DICE_AIR", "DICE_BONE", "DICE_SOFT"]
         # metric_list = cal_mae(curr_pred_denorm, y_data_denorm)
         key_name = file_name.replace(".nii.gz", "")
-        output_metric[key_name] = metric_list
+        for idx, key in enumerate(metric_keys):
+            output_metric[key] = metric_list[idx]
+        print("MAE: ", output_metric["MAE"], end=" ")
 
     # save nifty prediction
     save_path = os.path.join(test_dict["save_folder"], test_dict["eval_save_folder"], file_name)
