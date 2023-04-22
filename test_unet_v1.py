@@ -16,8 +16,8 @@ time.sleep(1)
 
 project_name = model_list[current_model_idx][0]
 gpu_list = ','.join(str(x) for x in model_list[current_model_idx][1])
-model_term = model_list[current_model_idx][2]
-random_seed = model_list[current_model_idx][3]
+# model_term = model_list[current_model_idx][2]
+# random_seed = model_list[current_model_idx][3]
 
 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
 print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
@@ -57,7 +57,8 @@ test_dict["save_tag"] = ""
 
 train_dict = np.load(test_dict["save_folder"]+"dict.npy", allow_pickle=True)[()]
 
-test_dict["seed"] = train_dict["seed"]
+test_dict["random_seed"] = train_dict["random_seed"]
+np.random.seed(train_dict["random_seed"])
 test_dict["input_size"] = train_dict["input_size"]
 
 print("input size:", test_dict["input_size"])
