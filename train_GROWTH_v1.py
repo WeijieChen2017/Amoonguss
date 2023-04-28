@@ -117,6 +117,9 @@ print("Train: ", len(train_list))
 print("Val: ", len(val_list))
 print("Test: ", len(test_list))
 
+train_list = train_list[:10]
+val_list = val_list[:5]
+
 # ==================== training ====================
 
 first_stage = True
