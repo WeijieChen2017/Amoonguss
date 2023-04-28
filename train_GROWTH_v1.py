@@ -140,6 +140,11 @@ for training_dict in train_dict["GROWTH_epochs"]:
     train_lr = training_dict["lr"]
     train_loss = training_dict["loss"]
 
+    if not first_stage:
+        model.to("cpu")
+        del model
+        torch.cuda.empty_cache()
+
     model = UNet_GROWTH( 
         spatial_dims=train_dict["model_related"]["spatial_dims"],
         in_channels=train_dict["model_related"]["in_channels"],
@@ -158,6 +163,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
             # get the size of corresponing layer
             new_size = new_state_dict[key].size()
             before_size = before_state_dict[key].size()
+            print(key, new_size, before_size)
             # create a new layer with the same size
             # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
             if "conv.weight" in key: # conv.weight is a 5d tensor, the first dimension is the number of output channels, the second dimension is the number of input channels
