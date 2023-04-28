@@ -163,15 +163,17 @@ for training_dict in train_dict["GROWTH_epochs"]:
             # get the size of corresponing layer
             new_size = new_state_dict[key].size()
             before_size = before_state_dict[key].size()
-            print(key, new_size, before_size)
             # create a new layer with the same size
             # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
             if "conv.weight" in key: # conv.weight is a 5d tensor, the first dimension is the number of output channels, the second dimension is the number of input channels
                 new_state_dict[key][:before_state_dict[key].size()[0], :before_state_dict[key].size()[1], :, :, :] = before_state_dict[key]
+                print("conv.weight", key, new_size, before_size)
             if "conv.bias" in key: # conv.bias is a 1d tensor, the first dimension is the number of output channels
                 new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
+                print("conv.bias", key, new_size, before_size)
             else:
                 new_state_dict[key] = before_state_dict[key]
+                print("else", key, new_size, before_size)
 
         for key in new_state_dict.keys():
             print(key, new_state_dict[key].size())
