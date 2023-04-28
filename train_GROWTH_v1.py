@@ -288,7 +288,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
                 print("Loss: ", case_loss[cnt_file])
 
             print(iter_tag + " ===>Stage[{:03d}]-Epoch[{:03d}]: ".format(train_stage, idx_epoch+1), end='')
-            print("  Loss({:01}): ".format(train_loss), np.mean(case_loss))
+            print("  Loss: ", np.mean(case_loss))
             np.save(train_dict["save_folder"]+"loss/stage_{:03d}_loss_".format(train_stage)+iter_tag+"_{:03d}.npy".format(idx_epoch+1), case_loss)
 
             if isVal:
