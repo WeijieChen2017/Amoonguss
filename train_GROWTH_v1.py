@@ -148,7 +148,6 @@ for training_dict in train_dict["GROWTH_epochs"]:
         strides=train_dict["model_related"]["strides"],
         num_res_units=train_dict["model_related"]["num_res_units"]
         )
-    model.zeroInitialise()
     
     if not first_stage:
         before_list = sorted(glob.glob(train_dict["save_folder"]+"stage_{:03d}_model_*.pth".format(train_stage-1)))
