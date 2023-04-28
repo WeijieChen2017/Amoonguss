@@ -119,6 +119,7 @@ print("Test: ", len(test_list))
 
 # ==================== training ====================
 
+first_stage = True
 best_val_loss = 100
 best_epoch = 0
 # wandb.watch(model)
@@ -145,25 +146,24 @@ for training_dict in train_dict["GROWTH_epochs"]:
         num_res_units=train_dict["model_related"]["num_res_units"]
         )
     
-    if before_state_dict is not None:
+    if not first_stage:
         before_state_dict = torch.load(train_dict["save_folder"]+"stage_{:03d}_model_{:03d}.pth".format(train_stage, best_epoch))
-    
-    template_state_dict = model.state_dict()
-    new_state_dict = {}
-    for key in template_state_dict.keys():
-        if key in before_state_dict.keys():
-            # get the size of corresponing layer
-            template_size = template_state_dict[key].size()
-            before_size = before_state_dict[key].size()
-            # create a new layer with the same size
-            new_state_dict[key] = torch.zeros(template_size)
-            # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
-            if "conv.weight" in key or "conv.bias" in key:
-                for idx_dim in range(len(template_size)):
-                    if template_size[idx_dim] > before_size[idx_dim]:
-                        new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
-            else:
-                new_state_dict[key] = before_state_dict[key]
+        template_state_dict = model.state_dict()
+        new_state_dict = {}
+        for key in template_state_dict.keys():
+            if key in before_state_dict.keys():
+                # get the size of corresponing layer
+                template_size = template_state_dict[key].size()
+                before_size = before_state_dict[key].size()
+                # create a new layer with the same size
+                new_state_dict[key] = torch.zeros(template_size)
+                # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
+                if "conv.weight" in key or "conv.bias" in key:
+                    for idx_dim in range(len(template_size)):
+                        if template_size[idx_dim] > before_size[idx_dim]:
+                            new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
+                else:
+                    new_state_dict[key] = before_state_dict[key]
         
     model.load_state_dict(new_state_dict)
 
@@ -270,6 +270,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
                     torch.save(optimizer.state_dict(), train_dict["save_folder"]+"stage_{:03d}_optim_{:03d}.pth".format(train_stage, idx_epoch + 1))
                     print("Checkpoint saved at Epoch {:03d}".format(idx_epoch + 1))
                     best_val_loss = np.mean(case_loss)
+                    best_epoch = idx_epoch + 1
 
             # del batch_x, batch_y
             # gc.collect()
