@@ -234,14 +234,14 @@ class UNet_GROWTH(nn.Module):
         # self.up2 = nn.ModuleList(self.up2)
         # self.up1 = nn.ModuleList(self.up1)
     
-    # def zeroInitialise(self):
-    #     nn.init.zeros_(self.down1)
-    #     nn.init.zeros_(self.down2)
-    #     nn.init.zeros_(self.down3)
-    #     nn.init.zeros_(self.bottom)
-    #     nn.init.zeros_(self.up3)
-    #     nn.init.zeros_(self.up2)
-    #     nn.init.zeros_(self.up1)
+    def zeroInitialise(self):
+        nn.init.zeros_(self.down1)
+        nn.init.zeros_(self.down2)
+        nn.init.zeros_(self.down3)
+        nn.init.zeros_(self.bottom)
+        nn.init.zeros_(self.up3)
+        nn.init.zeros_(self.up2)
+        nn.init.zeros_(self.up1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 

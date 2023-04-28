@@ -148,27 +148,25 @@ for training_dict in train_dict["GROWTH_epochs"]:
         strides=train_dict["model_related"]["strides"],
         num_res_units=train_dict["model_related"]["num_res_units"]
         )
+    model.zeroInitialise()
     
     if not first_stage:
         before_list = sorted(glob.glob(train_dict["save_folder"]+"stage_{:03d}_model_*.pth".format(train_stage-1)))
         before_path = before_list[-1]
         before_state_dict = torch.load(before_path)
-        template_state_dict = model.state_dict()
-        new_state_dict = {}
-        for key in template_state_dict.keys():
-            if key in before_state_dict.keys():
-                # get the size of corresponing layer
-                template_size = template_state_dict[key].size()
-                before_size = before_state_dict[key].size()
-                # create a new layer with the same size
-                new_state_dict[key] = torch.zeros(template_size)
-                # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
-                if "conv.weight" in key: # conv.weight is a 5d tensor, the first dimension is the number of output channels, the second dimension is the number of input channels
-                    new_state_dict[key][:before_state_dict[key].size()[0], :before_state_dict[key].size()[1], :, :, :] = before_state_dict[key]
-                if "conv.bias" in key: # conv.bias is a 1d tensor, the first dimension is the number of output channels
-                    new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
-                else:
-                    new_state_dict[key] = before_state_dict[key]
+        new_state_dict = model.state_dict()
+        for key in new_state_dict.keys():
+            # get the size of corresponing layer
+            new_size = new_state_dict[key].size()
+            before_size = before_state_dict[key].size()
+            # create a new layer with the same size
+            # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
+            if "conv.weight" in key: # conv.weight is a 5d tensor, the first dimension is the number of output channels, the second dimension is the number of input channels
+                new_state_dict[key][:before_state_dict[key].size()[0], :before_state_dict[key].size()[1], :, :, :] = before_state_dict[key]
+            if "conv.bias" in key: # conv.bias is a 1d tensor, the first dimension is the number of output channels
+                new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
+            else:
+                new_state_dict[key] = before_state_dict[key]
 
         for key in new_state_dict.keys():
             print(key, new_state_dict[key].size())
