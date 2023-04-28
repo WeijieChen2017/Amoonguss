@@ -164,22 +164,23 @@ for training_dict in train_dict["GROWTH_epochs"]:
             new_size = new_state_dict[key].size()
             before_size = before_state_dict[key].size()
             # create a new layer with the same size
-            if "weight" in key:
-                print("weight", key, new_size, before_size)
-                new_state_dict[key][
-                    :before_state_dict[key].size()[0], 
-                    :before_state_dict[key].size()[1], 
-                    :before_state_dict[key].size()[2],
-                    :before_state_dict[key].size()[3],
-                    :before_state_dict[key].size()[4], 
-                ] = before_state_dict[key]
-            elif "bias" in key:
-                print("bias", key, new_size, before_size)
-                new_state_dict[key][
-                    :before_state_dict[key].size()[0]
-                ] = before_state_dict[key]
+            if not ".A." in key:
+                if "weight" in key:
+                    print("weight", key, new_size, before_size)
+                    new_state_dict[key][
+                        :before_state_dict[key].size()[0], 
+                        :before_state_dict[key].size()[1], 
+                        :before_state_dict[key].size()[2],
+                        :before_state_dict[key].size()[3],
+                        :before_state_dict[key].size()[4], 
+                    ] = before_state_dict[key]
+                elif "bias" in key and not:
+                    print("bias", key, new_size, before_size)
+                    new_state_dict[key][
+                        :before_state_dict[key].size()[0]
+                    ] = before_state_dict[key]
             else:
-                print("else", key, new_size, before_size)
+                print("A", key, new_size, before_size)
                 new_state_dict[key] = before_state_dict[key]
 
             # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
