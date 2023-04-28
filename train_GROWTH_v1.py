@@ -2,7 +2,7 @@ import os
 import time
 
 model_list = [
-    ["unet_GROWTH_v1_8066", [7], "unet", 8066],
+    ["unet_GROWTH_v1_8066", [4], "unet", 8066],
     # ["unet_v1_5541", [7], "unet", 5541],
     # ["unet_v1_7363", [7], "unet", 7363],
     # ["dynunet_v1", [7], "dynunet"],
