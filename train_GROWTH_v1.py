@@ -174,7 +174,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
                         :before_state_dict[key].size()[3],
                         :before_state_dict[key].size()[4], 
                     ] = before_state_dict[key]
-                elif "bias" in key and not:
+                elif "bias" in key:
                     print("bias", key, new_size, before_size)
                     new_state_dict[key][
                         :before_state_dict[key].size()[0]
