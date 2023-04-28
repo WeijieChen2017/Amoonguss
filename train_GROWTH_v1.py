@@ -176,7 +176,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
                 # print("conv.bias", key, new_size, before_size)
             else:
                 new_state_dict[key] = before_state_dict[key]
-                print("else", key, new_size, before_size)
+                # print("else", key, new_size, before_size)
 
         for key in new_state_dict.keys():
             print(key, new_state_dict[key].size())
