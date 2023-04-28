@@ -214,7 +214,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
                 x_path = file_path
                 y_path = file_path.replace("mr", "ct")
                 file_name = os.path.basename(file_path)
-                print(iter_tag + " ===> Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, cnt_file+1, n_file), x_path, "<---", end="")
+                print(iter_tag + " ===> Stage[{:03d}]-Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(train_stage, idx_epoch+1, cnt_file+1, n_file), x_path, "<---", end="")
                 x_file = nib.load(x_path)
                 y_file = nib.load(y_path)
                 x_data = x_file.get_fdata()
@@ -252,9 +252,9 @@ for training_dict in train_dict["GROWTH_epochs"]:
                 case_loss[cnt_file] = loss.item()
                 print("Loss: ", case_loss[cnt_file])
 
-            print(iter_tag + " ===>===> Epoch[{:03d}]: ".format(idx_epoch+1), end='')
+            print(iter_tag + " ===>Stage[{:03d}]-Epoch[{:03d}]: ".format(train_stage, idx_epoch+1), end='')
             print("  Loss: ", np.mean(case_loss))
-            np.save(train_dict["save_folder"]+"loss/epoch_loss_"+iter_tag+"_{:03d}.npy".format(idx_epoch+1), case_loss)
+            np.save(train_dict["save_folder"]+"loss/stage_{:03d}_loss_".format(train_stage)+iter_tag+"_{:03d}.npy".format(idx_epoch+1), case_loss)
 
             if isVal:
                 # np.save(train_dict["save_folder"]+"npy/Epoch[{:03d}]_Case[{}]_".format(idx_epoch+1, file_name)+iter_tag+"_x.npy", batch_x.cpu().detach().numpy())

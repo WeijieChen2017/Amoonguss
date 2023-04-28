@@ -191,40 +191,40 @@ class UNet_GROWTH(nn.Module):
         self.down1 = ResidualUnit(3, self.in_channels, self.channels[0], self.strides[0],
                 kernel_size=self.kernel_size, subunits=self.num_res_units,
                 act=self.act, norm=self.norm, dropout=self.dropout,
-                bias=self.bias, adn_ordering=self.adn_ordering, groups=self.n_group)
+                bias=self.bias, adn_ordering=self.adn_ordering)
         self.down2 = ResidualUnit(3, self.channels[0], self.channels[1], self.strides[1],
                 kernel_size=self.kernel_size, subunits=self.num_res_units,
                 act=self.act, norm=self.norm, dropout=self.dropout,
-                bias=self.bias, adn_ordering=self.adn_ordering, group=self.n_group)
+                bias=self.bias, adn_ordering=self.adn_ordering)
         self.down3 = ResidualUnit(3, self.channels[1], self.channels[2], self.strides[2],
                 kernel_size=self.kernel_size, subunits=self.num_res_units,
                 act=self.act, norm=self.norm, dropout=self.dropout,
-                bias=self.bias, adn_ordering=self.adn_ordering, group=self.n_group)
+                bias=self.bias, adn_ordering=self.adn_ordering)
         self.bottom = ResidualUnit(3, self.channels[2], self.channels[3], 1,
                 kernel_size=self.kernel_size, subunits=self.num_res_units,
                 act=self.act, norm=self.norm, dropout=self.dropout,
-                bias=self.bias, adn_ordering=self.adn_ordering, group=self.n_group)
+                bias=self.bias, adn_ordering=self.adn_ordering)
         self.up3 = nn.Sequential(
                 Convolution(3, self.channels[3]+self.channels[2], self.channels[1], strides=self.strides[2],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
-                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering, group=self.n_group),
+                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering),
                 ResidualUnit(3, self.channels[1], self.channels[1], strides=1,
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
-                dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering, group=self.n_group))
+                dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering))
         self.up2 = nn.Sequential(
                 Convolution(3, self.channels[1]*2, self.channels[0], strides=self.strides[1],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
-                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering, group=self.n_group),
+                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering),
                 ResidualUnit(3, self.channels[0], self.channels[0], strides=1,
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
-                dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering, group=self.n_group))
+                dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering))
         self.up1 = nn.Sequential(
                 Convolution(3, self.channels[0]*2, self.out_channels, strides=self.strides[0],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
-                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering, group=self.n_group),
+                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering),
                 ResidualUnit(3, self.out_channels, self.out_channels, strides=1,
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
-                dropout=self.dropout, bias=self.bias, last_conv_only=True, adn_ordering=self.adn_ordering, group=self.n_group))
+                dropout=self.dropout, bias=self.bias, last_conv_only=True, adn_ordering=self.adn_ordering))
 
         # self.down1 = nn.ModuleList(self.down1)
         # self.down2 = nn.ModuleList(self.down2)
