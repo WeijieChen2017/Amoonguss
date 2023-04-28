@@ -167,8 +167,12 @@ for training_dict in train_dict["GROWTH_epochs"]:
                             new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
                 else:
                     new_state_dict[key] = before_state_dict[key]
+
+        for key in new_state_dict.keys():
+            print(key, new_state_dict[key].size())
         model.load_state_dict(new_state_dict)
 
+    first_stage = False
     model.train()
     model = model.to(device)
 
@@ -222,10 +226,10 @@ for training_dict in train_dict["GROWTH_epochs"]:
                 x_data = x_file.get_fdata()
                 y_data = y_file.get_fdata()
 
-                batch_x = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1], train_dict["input_size"][2]))
-                batch_y = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1], train_dict["input_size"][2]))
+                batch_x = np.zeros((train_batch, 1, train_dict["input_size"][0], train_dict["input_size"][1], train_dict["input_size"][2]))
+                batch_y = np.zeros((train_batch, 1, train_dict["input_size"][0], train_dict["input_size"][1], train_dict["input_size"][2]))
 
-                for idx_batch in range(train_dict["batch"]):
+                for idx_batch in range(train_batch):
                     
                     d0_offset = np.random.randint(x_data.shape[0] - train_dict["input_size"][0])
                     d1_offset = np.random.randint(x_data.shape[1] - train_dict["input_size"][1])
