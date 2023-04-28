@@ -50,11 +50,11 @@ train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["dropout"] = 0
 train_dict["GROWTH_epochs"] = [
-    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 5, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 5, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 10, "batch" : 16, "lr": 5e-4, "loss": "l1",},
-    {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 10, "batch" : 16, "lr": 5e-4, "loss": "l1",},
-    {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 15, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
+    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+    {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+    {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 100, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+    {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+    {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
 ]
 
 train_dict["model_related"] = {}
@@ -117,8 +117,8 @@ print("Train: ", len(train_list))
 print("Val: ", len(val_list))
 print("Test: ", len(test_list))
 
-train_list = train_list[:10]
-val_list = val_list[:5]
+# train_list = train_list[:10]
+# val_list = val_list[:5]
 
 # ==================== training ====================
 
@@ -288,7 +288,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
                 print("Loss: ", case_loss[cnt_file])
 
             print(iter_tag + " ===>Stage[{:03d}]-Epoch[{:03d}]: ".format(train_stage, idx_epoch+1), end='')
-            print("  Loss: ", np.mean(case_loss))
+            print("  Loss({:01}): ".format(train_loss), np.mean(case_loss))
             np.save(train_dict["save_folder"]+"loss/stage_{:03d}_loss_".format(train_stage)+iter_tag+"_{:03d}.npy".format(idx_epoch+1), case_loss)
 
             if isVal:
