@@ -163,10 +163,10 @@ for training_dict in train_dict["GROWTH_epochs"]:
                 # create a new layer with the same size
                 new_state_dict[key] = torch.zeros(template_size)
                 # if the key contains conv.weight or conv.bias, copy the weight from the old layer to the new layer, if size do not match, put the weight in the beginning
-                if "conv.weight" in key or "conv.bias" in key:
-                    for idx_dim in range(len(template_size)):
-                        if template_size[idx_dim] > before_size[idx_dim]:
-                            new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
+                if "conv.weight" in key: # conv.weight is a 5d tensor, the first dimension is the number of output channels, the second dimension is the number of input channels
+                    new_state_dict[key][:before_state_dict[key].size()[0], :before_state_dict[key].size()[1], :, :, :] = before_state_dict[key]
+                if "conv.bias" in key: # conv.bias is a 1d tensor, the first dimension is the number of output channels
+                    new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
                 else:
                     new_state_dict[key] = before_state_dict[key]
 
