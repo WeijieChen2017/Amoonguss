@@ -168,13 +168,12 @@ for training_dict in train_dict["GROWTH_epochs"]:
             if "down1.residual.weight" in key or "down1.conv.unit0.conv.weight" in key:
                 new_state_dict[key][:before_state_dict[key].size()[0], :, :, :, :] = before_state_dict[key]
                 # print("conv.weight", key, new_size, before_size)
-            elif "conv.weight" in key or "residual.weight": # conv.weight is a 5d tensor, the first dimension is the number of output channels, the second dimension is the number of input channels
-                print("conv.weight", key, new_size, before_size)
-                new_state_dict[key][:before_state_dict[key].size()[0], :before_state_dict[key].size()[1], :, :, :] = before_state_dict[key]
-                
-            elif "conv.bias" in key or "residual.bias": # conv.bias is a 1d tensor, the first dimension is the number of output channels
-                new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
+            elif "conv.bias" in key or "residual.bias" or "down1.conv.unit0.conv.bias" in key: # conv.bias is a 1d tensor, the first dimension is the number of output channels            
                 # print("conv.bias", key, new_size, before_size)
+                new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
+            elif "conv.weight" in key or "residual.weight": # conv.weight is a 5d tensor, the first dimension is the number of output channels, the second dimension is the number of input channels
+                # print("conv.weight", key, new_size, before_size)
+                new_state_dict[key][:before_state_dict[key].size()[0], :before_state_dict[key].size()[1], :, :, :] = before_state_dict[key]
             else:
                 new_state_dict[key] = before_state_dict[key]
                 # print("else", key, new_size, before_size)
