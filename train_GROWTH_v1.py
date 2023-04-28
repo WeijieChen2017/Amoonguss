@@ -164,8 +164,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
                             new_state_dict[key][:before_state_dict[key].size()[0]] = before_state_dict[key]
                 else:
                     new_state_dict[key] = before_state_dict[key]
-        
-    model.load_state_dict(new_state_dict)
+        model.load_state_dict(new_state_dict)
 
     model.train()
     model = model.to(device)
