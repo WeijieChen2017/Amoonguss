@@ -150,7 +150,9 @@ for training_dict in train_dict["GROWTH_epochs"]:
         )
     
     if not first_stage:
-        before_state_dict = torch.load(train_dict["save_folder"]+"stage_{:03d}_model_{:03d}.pth".format(train_stage, best_epoch))
+        before_list = sorted(glob.glob(train_dict["save_folder"]+"stage_{:03d}_model_*.pth".format(train_stage-1)))
+        before_path = before_list[-1]
+        before_state_dict = torch.load(before_path)
         template_state_dict = model.state_dict()
         new_state_dict = {}
         for key in template_state_dict.keys():
