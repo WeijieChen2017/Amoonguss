@@ -226,6 +226,10 @@ class UNet_GROWTH(nn.Module):
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
                 dropout=self.dropout, bias=self.bias, last_conv_only=True, adn_ordering=self.adn_ordering))
 
+        # Set all parameters to zero
+        for param in self.parameters():
+            param.data.zero_()
+
         # self.down1 = nn.ModuleList(self.down1)
         # self.down2 = nn.ModuleList(self.down2)
         # self.down3 = nn.ModuleList(self.down3)
@@ -234,14 +238,14 @@ class UNet_GROWTH(nn.Module):
         # self.up2 = nn.ModuleList(self.up2)
         # self.up1 = nn.ModuleList(self.up1)
     
-    def zeroInitialise(self):
-        nn.init.zeros_(self.down1)
-        nn.init.zeros_(self.down2)
-        nn.init.zeros_(self.down3)
-        nn.init.zeros_(self.bottom)
-        nn.init.zeros_(self.up3)
-        nn.init.zeros_(self.up2)
-        nn.init.zeros_(self.up1)
+    # def zeroInitialise(self):
+    #     nn.init.zeros_(self.down1)
+    #     nn.init.zeros_(self.down2)
+    #     nn.init.zeros_(self.down3)
+    #     nn.init.zeros_(self.bottom)
+    #     nn.init.zeros_(self.up3)
+    #     nn.init.zeros_(self.up2)
+    #     nn.init.zeros_(self.up1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 
