@@ -54,10 +54,10 @@ train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["dropout"] = 0
 train_dict["GROWTH_epochs"] = [
-    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 50, "batch" : 16, "lr": 5e-4, "loss": "l1",},
-    {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 25, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+    {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 7e-4, "loss": "l2",},
+    {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 75, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+    {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 3e-4, "loss": "l1",},
     {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
 ]
 
@@ -126,7 +126,7 @@ print("Test: ", len(test_list))
 
 # ==================== training ====================
 
-first_stage = True
+is_first_stage = True
 best_val_loss = 100
 best_epoch = 0
 # wandb.watch(model)
@@ -144,7 +144,10 @@ for training_dict in train_dict["GROWTH_epochs"]:
     train_lr = training_dict["lr"]
     train_loss = training_dict["loss"]
 
-    if not first_stage:
+    if is_first_stage:
+        partial_param = False
+    else:
+        partial_param = True
         model.to("cpu")
         del model
         torch.cuda.empty_cache()
@@ -155,12 +158,14 @@ for training_dict in train_dict["GROWTH_epochs"]:
         out_channels=train_dict["model_related"]["out_channels"],
         channels=train_channels,
         strides=train_dict["model_related"]["strides"],
-        num_res_units=train_dict["model_related"]["num_res_units"]
+        num_res_units=train_dict["model_related"]["num_res_units"],
+        partial_param=partial_param
         )
     
-    if not first_stage:
-        before_list = sorted(glob.glob(train_dict["save_folder"]+"stage_{:03d}_model_*.pth".format(train_stage-1)))
-        before_path = before_list[-1]
+    if not is_first_stage:
+        # before_list = sorted(glob.glob(train_dict["save_folder"]+"stage_{:03d}_model_*.pth".format(train_stage)))
+        # before_path = before_list[-1]
+        before_path = train_dict["save_folder"]+"stage_{:03d}_model_curr.pth".format(train_stage)
         before_state_dict = torch.load(before_path)
         new_state_dict = model.state_dict()
         for key in new_state_dict.keys():
@@ -205,7 +210,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
             print(key, new_state_dict[key].size())
         model.load_state_dict(new_state_dict)
 
-    first_stage = False
+    is_first_stage = False
     model.train()
     model = model.to(device)
 

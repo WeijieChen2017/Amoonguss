@@ -130,7 +130,8 @@ class UNet_GROWTH(nn.Module):
         adn_ordering: str = "NDA",
         dimensions: Optional[int] = None,
         # alter_block = 2,
-        n_group = 4,
+        n_group = 1,
+        partial_init = False,
     ) -> None:
 
         super().__init__()
@@ -165,6 +166,7 @@ class UNet_GROWTH(nn.Module):
         self.bias = bias
         self.adn_ordering = adn_ordering
         self.n_group = n_group
+        self.partial_init = partial_init
 
         # UNet( 
         # spatial_dims=unet_dict["spatial_dims"],
@@ -230,7 +232,7 @@ class UNet_GROWTH(nn.Module):
         # for param in self.parameters():
         #     param.data.zero_()
 
-        self.initialize_weights()
+        self.initialize_weights(self.partial_init)
 
         # self.down1 = nn.ModuleList(self.down1)
         # self.down2 = nn.ModuleList(self.down2)
@@ -249,10 +251,13 @@ class UNet_GROWTH(nn.Module):
     #     nn.init.zeros_(self.up2)
     #     nn.init.zeros_(self.up1)
 
-    def initialize_weights(self, method="he", negative_slope=0.25):
+    def initialize_weights(self, partial_init=False, method="he", negative_slope=0.25):
         for name, param in self.named_parameters():
             if "conv.weight" in name:
-                if method == "he":
+                if self.partial_init:
+                    partial_param = self.get_initialized_half_param(param, method, negative_slope)
+                    param.data[partial_param.size(0):, partial_param.size(1):, ...] = partial_param
+                elif method == "he":
                     nn.init.kaiming_normal_(param, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
                 elif method == "xavier":
                     nn.init.xavier_normal_(param, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
@@ -261,12 +266,31 @@ class UNet_GROWTH(nn.Module):
             elif "adn.A.weight" in name:
                 nn.init.constant_(param, 1)
             elif "residual.weight" in name:
-                if method == "he":
+                if self.partial_init:
+                    partial_param = self.get_initialized_half_param(param, method, negative_slope)
+                    param.data[partial_param.size(0):, partial_param.size(1):, ...] = partial_param
+                elif method == "he":
                     nn.init.kaiming_normal_(param, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
                 elif method == "xavier":
                     nn.init.xavier_normal_(param, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
             elif "residual.bias" in name:
                 nn.init.constant_(param, 0)
+
+    def get_initialized_half_param(self, param, method="he", negative_slope=0.25):
+        chan_in, chan_out, *conv_size = param.size()
+        if chan_in % 2 == 0:
+            chan_in = chan_in // 2
+        if chan_out % 2 == 0:
+            chan_out = chan_out // 2
+        partial_shape = (chan_in, chan_out, *conv_size)
+        partial_param = torch.zeros(partial_shape, device=param.device)
+        if method == "he":
+            nn.init.kaiming_normal_(partial_param, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
+        elif method == "xavier":
+            nn.init.xavier_normal_(partial_param, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
+
+        return partial_param
+
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 
