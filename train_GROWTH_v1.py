@@ -54,7 +54,7 @@ train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["dropout"] = 0
 train_dict["GROWTH_epochs"] = [
-    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 25, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 1, "batch" : 32, "lr": 1e-3, "loss": "l2",},
     {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 7e-4, "loss": "l2",},
     {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 75, "batch" : 16, "lr": 5e-4, "loss": "l1",},
     {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 3e-4, "loss": "l1",},
