@@ -2,9 +2,10 @@ import os
 import time
 
 model_list = [
-    ["unet_GROWTH_v1_8066", [4], "unet", 8066],
-    ["unet_GROWTH_v1_8066_16-24-32", [4], "unet", 8066],
-    ["unet_GROWTH_v1_8066_32", [4], "unet", 8066],
+    # ["unet_GROWTH_v1_8066", [4], "unet", 8066],
+    # ["unet_GROWTH_v1_8066_16-24-32", [4], "unet", 8066],
+    # ["unet_GROWTH_v1_8066_32", [4], "unet", 8066],
+    ["unet_GROWTH_v1_8066_8-16-24-32-40", [4], "unet", 8066],
 
     # ["unet_v1_5541", [7], "unet", 5541],
     # ["unet_v1_7363", [7], "unet", 7363],
@@ -53,11 +54,11 @@ train_dict["epochs"] = 200
 train_dict["batch"] = 32
 train_dict["dropout"] = 0
 train_dict["GROWTH_epochs"] = [
-    # {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    # {"stage": 0, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    # {"stage": 1, "model_channels": (24, 48, 96, 192), "epochs" : 50, "batch" : 16, "lr": 5e-4, "loss": "l1",},
-    {"stage": 0, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 5e-4, "loss": "l1",},
-    # {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
+    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+    {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+    {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 50, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+    {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+    {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
 ]
 
 train_dict["model_related"] = {}

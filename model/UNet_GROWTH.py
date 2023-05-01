@@ -226,9 +226,11 @@ class UNet_GROWTH(nn.Module):
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
                 dropout=self.dropout, bias=self.bias, last_conv_only=True, adn_ordering=self.adn_ordering))
 
-        # Set all parameters to zero
-        for param in self.parameters():
-            param.data.zero_()
+        # # Set all parameters to zero
+        # for param in self.parameters():
+        #     param.data.zero_()
+
+        self.initialize_weights()
 
         # self.down1 = nn.ModuleList(self.down1)
         # self.down2 = nn.ModuleList(self.down2)
@@ -246,6 +248,25 @@ class UNet_GROWTH(nn.Module):
     #     nn.init.zeros_(self.up3)
     #     nn.init.zeros_(self.up2)
     #     nn.init.zeros_(self.up1)
+
+    def initialize_weights(self, method="he", negative_slope=0.25):
+        for m in self.modules():
+            if isinstance(m, nn.Conv3d):
+                if method == "he":
+                    nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
+                elif method == "xavier":
+                    nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.InstanceNorm3d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                if method == "he":
+                    nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
+                elif method == "xavier":
+                    nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
+                nn.init.constant_(m.bias, 0)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 
