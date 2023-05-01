@@ -145,9 +145,9 @@ for training_dict in train_dict["GROWTH_epochs"]:
     train_loss = training_dict["loss"]
 
     if is_first_stage:
-        partial_param = False
+        partial_init = False
     else:
-        partial_param = True
+        partial_init = True
         model.to("cpu")
         del model
         torch.cuda.empty_cache()
@@ -159,7 +159,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
         channels=train_channels,
         strides=train_dict["model_related"]["strides"],
         num_res_units=train_dict["model_related"]["num_res_units"],
-        partial_param=partial_param
+        partial_init=partial_init,
         )
     
     if not is_first_stage:
