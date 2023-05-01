@@ -86,7 +86,7 @@ def denorm_CT(x):
 
 # ==================== basic settings ====================
 
-model_list = sorted(glob.glob(os.path.join(test_dict["save_folder"], "stage_004_model_131.pth")))
+model_list = sorted(glob.glob(os.path.join(test_dict["save_folder"], "stage_{}_model_*.pth".formate(train_dict["GROWTH_epochs"][stage_idx]["stage"]))))
 if "curr" in model_list[-1]:
     print("Remove model_best_curr")
     model_list.pop()
@@ -99,7 +99,7 @@ model = UNet_GROWTH(
     in_channels=train_dict["model_related"]["in_channels"],
     out_channels=train_dict["model_related"]["out_channels"],
     # channels=train_dict["model_related"]["channels"],
-    channels=train_dict["GROWTH_epochs"][stage_idx]["channels"],
+    channels=train_dict["GROWTH_epochs"][stage_idx]["model_channels"],
     strides=train_dict["model_related"]["strides"],
     num_res_units=train_dict["model_related"]["num_res_units"]
     )
