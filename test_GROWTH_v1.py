@@ -86,7 +86,7 @@ def denorm_CT(x):
 
 # ==================== basic settings ====================
 
-model_list = sorted(glob.glob(os.path.join(test_dict["save_folder"], "stage_{:03d}_model_*.pth".format(train_dict["GROWTH_epochs"][stage_idx]["stage"]))))
+model_list = sorted(glob.glob(os.path.join(test_dict["save_folder"], "stage_{:03d}_model_005.pth".format(train_dict["GROWTH_epochs"][stage_idx]["stage"]))))
 if "curr" in model_list[-1]:
     print("Remove model_best_curr")
     model_list.pop()
