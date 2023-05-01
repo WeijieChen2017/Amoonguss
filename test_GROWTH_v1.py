@@ -2,7 +2,11 @@ import os
 import time
 
 model_list = [
-    ["unet_GROWTH_v1_8066", [4], "unet", 8066],
+    ["unet_GROWTH_v1_8066", [4], "unet", 8066, 0],
+    ["unet_GROWTH_v1_8066", [4], "unet", 8066, 1],
+    ["unet_GROWTH_v1_8066", [4], "unet", 8066, 2],
+    ["unet_GROWTH_v1_8066", [4], "unet", 8066, 3],
+    ["unet_GROWTH_v1_8066", [4], "unet", 8066, 4],
     # ["unet_v1_5541", [7], "unet", 5541],
     # ["unet_v1_7363", [7], "unet", 7363],
     # ["dynunet_v1", [7], "dynunet"],
@@ -18,6 +22,7 @@ project_name = model_list[current_model_idx][0]
 gpu_list = ','.join(str(x) for x in model_list[current_model_idx][1])
 # model_term = model_list[current_model_idx][2]
 # random_seed = model_list[current_model_idx][3]
+stage_idx = model_list[current_model_idx][4]
 
 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
 print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
@@ -49,14 +54,16 @@ test_dict = {}
 test_dict["time_stamp"] = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 test_dict["project_name"] = project_name
 test_dict["save_folder"] = "./project_dir/"+test_dict["project_name"]+"/"
-test_dict["gpu_ids"] = gpu_list
-test_dict["eval_file_cnt"] = 0
-test_dict["eval_save_folder"] = "pred_vanilla/"
-test_dict["special_cases"] = []
-
-test_dict["save_tag"] = ""
 
 train_dict = np.load(test_dict["save_folder"]+"dict.npy", allow_pickle=True)[()]
+
+test_dict["gpu_ids"] = gpu_list
+test_dict["eval_file_cnt"] = 5
+test_dict["eval_save_folder"] = "pred_stage_{:03d}/".format(train_dict["GROWTH_epochs"][stage_idx]["stage"])
+test_dict["special_cases"] = []
+test_dict["save_tag"] = ""
+
+
 
 test_dict["random_seed"] = train_dict["random_seed"]
 np.random.seed(train_dict["random_seed"])
@@ -92,7 +99,7 @@ model = UNet_GROWTH(
     in_channels=train_dict["model_related"]["in_channels"],
     out_channels=train_dict["model_related"]["out_channels"],
     # channels=train_dict["model_related"]["channels"],
-    channels=(40, 80, 160, 320),
+    channels=train_dict["GROWTH_epochs"][stage_idx]["channels"],
     strides=train_dict["model_related"]["strides"],
     num_res_units=train_dict["model_related"]["num_res_units"]
     )
@@ -104,8 +111,8 @@ model.load_state_dict(model_state_dict)
 data_div = np.load(os.path.join(test_dict["save_folder"], "data_division.npy"), allow_pickle=True)[()]
 # X_list = data_div['test_list_X']
 X_list = data_div['test_list_X']
-# if test_dict["eval_file_cnt"] > 0:
-#     X_list = X_list[:test_dict["eval_file_cnt"]]
+if test_dict["eval_file_cnt"] > 0:
+    X_list = X_list[:test_dict["eval_file_cnt"]]
 X_list.sort()
 
 
