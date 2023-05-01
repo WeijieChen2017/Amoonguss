@@ -2,7 +2,7 @@ import os
 import time
 
 model_list = [
-    ["unet_v1_8066", [7], "unet", 8066],
+    ["unet_GROWTH_v1_8066", [4], "unet", 8066],
     # ["unet_v1_5541", [7], "unet", 5541],
     # ["unet_v1_7363", [7], "unet", 7363],
     # ["dynunet_v1", [7], "dynunet"],
@@ -39,6 +39,7 @@ from monai.networks.layers.factories import Act, Norm
 
 # from utils import add_noise, weighted_L1Loss
 from monai.networks.nets.unet import UNet as unet
+from model import UNet_GROWTH
 from monai.inferers import sliding_window_inference
 
 from util import cal_rmse_mae_ssim_psnr_acut_dice
@@ -78,7 +79,7 @@ def denorm_CT(x):
 
 # ==================== basic settings ====================
 
-model_list = sorted(glob.glob(os.path.join(test_dict["save_folder"], "model_best_*.pth")))
+model_list = sorted(glob.glob(os.path.join(test_dict["save_folder"], "stage_004_model_131.pth")))
 if "curr" in model_list[-1]:
     print("Remove model_best_curr")
     model_list.pop()
@@ -86,11 +87,12 @@ target_model = model_list[-1]
 model_state_dict = torch.load(target_model, map_location=torch.device('cpu'))
 print("--->", target_model, " is loaded.")
 
-model = unet( 
+model = UNet_GROWTH( 
     spatial_dims=train_dict["model_related"]["spatial_dims"],
     in_channels=train_dict["model_related"]["in_channels"],
     out_channels=train_dict["model_related"]["out_channels"],
-    channels=train_dict["model_related"]["channels"],
+    # channels=train_dict["model_related"]["channels"],
+    channels=(40, 80, 160, 320),
     strides=train_dict["model_related"]["strides"],
     num_res_units=train_dict["model_related"]["num_res_units"]
     )
@@ -99,43 +101,73 @@ model.load_state_dict(model_state_dict)
 
 # ==================== data division ====================
 
-X_list = sorted(glob.glob(os.path.join(test_dict["save_folder"], test_dict["eval_save_folder"], "*.nii.gz")))
+data_div = np.load(os.path.join(test_dict["save_folder"], "data_division.npy"), allow_pickle=True)[()]
+# X_list = data_div['test_list_X']
+X_list = data_div['test_list_X']
+# if test_dict["eval_file_cnt"] > 0:
+#     X_list = X_list[:test_dict["eval_file_cnt"]]
+X_list.sort()
 
-cnt_total_file = len(X_list)
 
-for cnt_file, file_path in enumerate(X_list):
+# ==================== training ====================
+file_list = []
+if len(test_dict["special_cases"]) > 0:
+    for case_name in X_list:
+        for spc_case_name in test_dict["special_cases"]:
+            if spc_case_name in os.path.basename(case_name):
+                file_list.append(case_name)
+else:
+    file_list = X_list
+
+iter_tag = "test"
+cnt_total_file = len(file_list)
+cnt_each_cube = 1
+model.eval()
+model = model.to(device)
+
+for cnt_file, file_path in enumerate(file_list):
     
     x_path = file_path
+    y_path = file_path.replace("mr", "ct")
     file_name = os.path.basename(file_path)
-    iter_tag = file_name.split("_")[0]
-    folder_tag = file_name.split("_")[1]
-    # brain_1BA054_mr.nii.gz
-    y_path = "./data_dir/t1_ct_norm/"+file_name.replace("mr", "ct")
-    mask_path = "./data_dir/Task1/"+iter_tag+"/"+folder_tag+"/mask.nii.gz"
-
+    print(iter_tag + " ===> Case[{:03d}/{:03d}]: ".format(cnt_file+1, cnt_total_file), x_path, "<---", end="") # 
     x_file = nib.load(x_path)
     y_file = nib.load(y_path)
-    mask_file = nib.load(mask_path)
-
     x_data = x_file.get_fdata()
     y_data = y_file.get_fdata()
-    mask_data = mask_file.get_fdata()
-
-    print(iter_tag + " ===> Case[{:03d}/{:03d}]: ".format(cnt_file+1, cnt_total_file), x_path, "<---", end="") # 
-    
-    ax, ay, az = x_data.shape
-    curr_pred_denorm = denorm_CT(x_data)
     y_data_denorm = denorm_CT(y_data)
-    curr_pred_denorm_masked = np.multiply(curr_pred_denorm, mask_data)
-    y_data_denorm_masked = np.multiply()
 
-    metric_list = cal_rmse_mae_ssim_psnr_acut_dice(curr_pred_denorm, y_data_denorm)
-    metric_keys = ["RMSE", "MAE", "SSIM", "PSNR", "ACUT", "DICE_AIR", "DICE_BONE", "DICE_SOFT"]
-    # metric_list = cal_mae(curr_pred_denorm, y_data_denorm)
-    key_name = file_name.replace(".nii.gz", "")
-    for idx, key in enumerate(metric_keys):
-        output_metric[key] = metric_list[idx]
-    print("MAE: ", output_metric["MAE"], end=" ")
+    ax, ay, az = x_data.shape
+
+    input_data = x_data
+    input_data = np.expand_dims(input_data, (0,1))
+    input_data = torch.from_numpy(input_data).float().to(device)
+    output_metric = dict()
+
+    with torch.no_grad():
+        # print(order_list[idx_es])
+        y_hat = sliding_window_inference(
+                inputs = input_data, 
+                roi_size = test_dict["input_size"], 
+                sw_batch_size = 64, 
+                predictor = model,
+                overlap=1/8, 
+                mode="gaussian", 
+                sigma_scale=0.125, 
+                padding_mode="constant", 
+                cval=0.0, 
+                sw_device=device, 
+                device=device,
+                )
+        curr_pred = np.squeeze(y_hat.cpu().detach().numpy())
+        curr_pred_denorm = denorm_CT(curr_pred)
+        metric_list = cal_rmse_mae_ssim_psnr_acut_dice(curr_pred_denorm, y_data_denorm)
+        metric_keys = ["RMSE", "MAE", "SSIM", "PSNR", "ACUT", "DICE_AIR", "DICE_BONE", "DICE_SOFT"]
+        # metric_list = cal_mae(curr_pred_denorm, y_data_denorm)
+        key_name = file_name.replace(".nii.gz", "")
+        for idx, key in enumerate(metric_keys):
+            output_metric[key] = metric_list[idx]
+        print("MAE: ", output_metric["MAE"], end=" ")
 
     # save nifty prediction
     save_path = os.path.join(test_dict["save_folder"], test_dict["eval_save_folder"], file_name)

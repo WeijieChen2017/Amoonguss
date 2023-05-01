@@ -298,7 +298,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
 
                 # torch.save(model, train_dict["save_folder"]+"model_curr.pth".format(idx_epoch + 1))
                 torch.save(model.state_dict(), train_dict["save_folder"]+"stage_{:03d}_model_curr.pth".format(train_stage))
-                torch.save(optimizer.state_dict(), train_dict["save_folder"]+"stage_{:3d}_optim_curr.pth".format(train_stage))
+                torch.save(optimizer.state_dict(), train_dict["save_folder"]+"stage_{:03d}_optim_curr.pth".format(train_stage))
                 if np.mean(case_loss) < best_val_loss:
                     # save the best model
                     torch.save(model.state_dict(), train_dict["save_folder"]+"stage_{:03d}_model_{:03d}.pth".format(train_stage, idx_epoch + 1))
