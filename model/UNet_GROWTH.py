@@ -250,23 +250,23 @@ class UNet_GROWTH(nn.Module):
     #     nn.init.zeros_(self.up1)
 
     def initialize_weights(self, method="he", negative_slope=0.25):
-        for m in self.modules():
-            if isinstance(m, nn.Conv3d):
+        for name, param in self.named_parameters():
+            if "conv.weight" in name:
                 if method == "he":
-                    nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
+                    nn.init.kaiming_normal_(param, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
                 elif method == "xavier":
-                    nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.InstanceNorm3d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
+                    nn.init.xavier_normal_(param, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
+            elif "conv.bias" in name:
+                nn.init.constant_(param, 0)
+            elif "adn.A.weight" in name:
+                nn.init.constant_(param, 1)
+            elif "residual.weight" in name:
                 if method == "he":
-                    nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
+                    nn.init.kaiming_normal_(param, mode="fan_out", nonlinearity="leaky_relu", a=negative_slope)
                 elif method == "xavier":
-                    nn.init.xavier_normal_(m.weight, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
-                nn.init.constant_(m.bias, 0)
+                    nn.init.xavier_normal_(param, gain=nn.init.calculate_gain("leaky_relu", negative_slope))
+            elif "residual.bias" in name:
+                nn.init.constant_(param, 0)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 
