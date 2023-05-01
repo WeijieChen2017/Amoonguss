@@ -165,7 +165,7 @@ for training_dict in train_dict["GROWTH_epochs"]:
     if not is_first_stage:
         # before_list = sorted(glob.glob(train_dict["save_folder"]+"stage_{:03d}_model_*.pth".format(train_stage)))
         # before_path = before_list[-1]
-        before_path = train_dict["save_folder"]+"stage_{:03d}_model_curr.pth".format(train_stage)
+        before_path = train_dict["save_folder"]+"stage_{:03d}_model_curr.pth".format(train_stage-1)
         before_state_dict = torch.load(before_path)
         new_state_dict = model.state_dict()
         for key in new_state_dict.keys():
