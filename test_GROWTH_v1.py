@@ -10,7 +10,7 @@ model_list = [
     # ["unet_GROWTH_v1_8066_16-24-32", [3], "unet", 8066, 2],
     # ["unet_GROWTH_v1_8066_32", [3], "unet", 8066, 0],
     # ["unet_GROWTH_v1_8066_8-16-24-32-40", [3], "unet", 8066, 0],
-    ["unet_GROWTH_v1_8066_8-16-24-32-40", [3], "unet", 8066, 4],
+    ["unet_GROWTH_v1_8066_8-16-24-32-40", [3], "unet", 8066, 3],
 ]
 
 print("Model index: ", end="")
