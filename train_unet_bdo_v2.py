@@ -115,13 +115,13 @@ if isinstance(train_dict["alter_block"], int):
 else:
     max_alter_block = max(train_dict["alter_block"])
 for idx_alter_block in range(max_alter_block):
-    swm["down1."+str(idx_alter_block)]   = "down1."
-    swm["down2."+str(idx_alter_block)]   = "down2."
-    swm["down3."+str(idx_alter_block)]   = "down3."
-    swm["bottom."+str(idx_alter_block)]  = "bottom."
-    swm["up3."+str(idx_alter_block)]     = "up3."
-    swm["up2."+str(idx_alter_block)]     = "up2."
-    swm["up1."+str(idx_alter_block)]     = "up1."
+    swm["down1."+str(idx_alter_block)]   = "down1"
+    swm["down2."+str(idx_alter_block)]   = "down2"
+    swm["down3."+str(idx_alter_block)]   = "down3"
+    swm["bottom."+str(idx_alter_block)]  = "bottom"
+    swm["up3."+str(idx_alter_block)]     = "up3"
+    swm["up2."+str(idx_alter_block)]     = "up2"
+    swm["up1."+str(idx_alter_block)]     = "up1"
 
 train_dict["state_weight_mapping"] = swm
 pretrain_state = torch.load(train_dict["target_model"])
