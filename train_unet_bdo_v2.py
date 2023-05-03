@@ -2,10 +2,11 @@ import os
 import time
 
 model_list = [
-    ["unet_bdo_8066_4444222", [3], "unet", 8066, [4,4,4,4,2,2,2]],
-    ["unet_bdo_9729_4444222", [3], "unet", 9729, [4,4,4,4,2,2,2]],
-    ["unet_bdo_8066_8888444", [3], "unet", 8066, [8,8,8,8,4,4,4]],
-    ["unet_bdo_9729_8888444", [3], "unet", 9729, [8,8,8,8,4,4,4]],
+    # ["unet_bdo_8066_4444222", [3], "unet", 8066, [4,4,4,4,2,2,2]],
+    # ["unet_bdo_9729_4444222", [3], "unet", 9729, [4,4,4,4,2,2,2]],
+    # ["unet_bdo_8066_8888444", [3], "unet", 8066, [8,8,8,8,4,4,4]],
+    # ["unet_bdo_9729_8888444", [3], "unet", 9729, [8,8,8,8,4,4,4]],
+    ["unet_GROWTH_v1_8066_8-16-24-32-40", [4], "unet", 8066, [8,8,8,8,4,4,4]],
 ]
 
 print("Model index: ", end="")
@@ -40,6 +41,7 @@ import torch
 # from monai.networks.nets.unet import UNet
 from monai.networks.layers.factories import Act, Norm
 from model import UNet_Theseus as UNet
+# from model import UNet_GROWTH
 
 # ==================== dict and config ====================
 
@@ -50,10 +52,10 @@ train_dict["alpha_dropout_consistency"] = 1
 
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["input_size"] = [64, 64, 64]
-train_dict["epochs"] = 200
-train_dict["batch"] = 16
-train_dict["target_model"] = "./project_dir/unet_v1_8066/model_best_181.pth"
-train_dict["base_model_folder"] = "./project_dir/unet_v1_8066/"
+train_dict["epochs"] = 1000
+train_dict["batch"] = 8
+train_dict["target_model"] = "./project_dir/unet_GROWTH_v1_8066_8-16-24-32-40/stage_004_model_097.pth"
+train_dict["base_model_folder"] = "./project_dir/unet_GROWTH_v1_8066_8-16-24-32-40/"
 
 train_dict["model_term"] = "Monai_Unet_blockwise_dropout"
 train_dict["dataset_ratio"] = 1
@@ -65,9 +67,9 @@ unet_dict = {}
 unet_dict["spatial_dims"] = 3
 unet_dict["in_channels"] = 1
 unet_dict["out_channels"] = 1
-unet_dict["channels"] = (32, 64, 128, 256)
+unet_dict["channels"] = (40, 80, 160, 320)
 unet_dict["strides"] = (2, 2, 2)
-unet_dict["num_res_units"] = 4
+unet_dict["num_res_units"] = 6
 unet_dict["act"] = Act.PRELU
 unet_dict["normunet"] = Norm.INSTANCE
 unet_dict["dropout"] = train_dict["dropout"]
@@ -75,7 +77,7 @@ unet_dict["bias"] = True
 unet_dict["alter_block"] = train_dict["alter_block"]
 train_dict["model_para"] = unet_dict
 
-train_dict["opt_lr"] = 3e-4 # default
+train_dict["opt_lr"] = 1e-4 # default
 train_dict["opt_betas"] = (0.9, 0.999) # default
 train_dict["opt_eps"] = 1e-8 # default
 train_dict["opt_weight_decay"] = 0.01 # default
