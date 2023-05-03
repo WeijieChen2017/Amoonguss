@@ -267,8 +267,8 @@ for idx_epoch_new in range(train_dict["epochs"]):
                 case_loss[cnt_file, 1] = loss_rdrop.item()
                 print("Loss: ", np.sum(case_loss[cnt_file, :]), "Recon: ", loss_recon.item(), "Rdropout: ", loss_rdrop.item())
 
-        epoch_loss_recon = np.sum(case_loss[:, 0])
-        epoch_loss_rdrop = np.sum(case_loss[:, 1])
+        epoch_loss_recon = np.mean(case_loss[:, 0])
+        epoch_loss_rdrop = np.mean(case_loss[:, 1])
         # epoch_loss = np.mean(case_loss)
         epoch_loss = epoch_loss_recon
         print(iter_tag + " ===>===> Epoch[{:03d}]: ".format(idx_epoch+1), end='')
