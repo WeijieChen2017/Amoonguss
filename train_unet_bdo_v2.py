@@ -135,6 +135,7 @@ for model_key in model_state_keys:
     if weight_prefix in swm.keys():
         weight_replacement = swm[weight_prefix]
         new_model_state[model_key] = pretrain_state[model_key.replace(weight_prefix, weight_replacement)]
+        print(model_key, model_key.replace(weight_prefix, weight_replacement))
     
 model.load_state_dict(new_model_state)
 
