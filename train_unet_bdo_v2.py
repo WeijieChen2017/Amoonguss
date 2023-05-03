@@ -129,12 +129,19 @@ pretrain_state = torch.load(train_dict["target_model"])
 model_state_keys = model.state_dict().keys()
 new_model_state = {}
 
+# print all keys in pretrain_state and model_state to compare how to map
+for key in pretrain_state.keys():
+    print(key)
+for key in model_state_keys:
+    print(key)
+
+
+
 for model_key in model_state_keys:
     weight_prefix = model_key[:model_key.find(".")+2]
 
     if weight_prefix in swm.keys():
         weight_replacement = swm[weight_prefix]
-        print(model_key, model_key.replace(weight_prefix, weight_replacement))
         new_model_state[model_key] = pretrain_state[model_key.replace(weight_prefix, weight_replacement)]
     
 model.load_state_dict(new_model_state)
