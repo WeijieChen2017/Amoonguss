@@ -38,3 +38,5 @@ class AddRicianNoise(transforms.MapTransform):
             d[key] = noisy_image
         return d
     
+
+def create_nfold_json(data_dir, nfold=5, random_seed=0):
