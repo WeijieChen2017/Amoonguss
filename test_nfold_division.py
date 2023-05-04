@@ -36,11 +36,13 @@ def create_folds(data_json, nfold, random_seed):
         val_data = {key: [path for path in data[key] if os.path.dirname(path) in val_cases] for key in data}
 
         # Save training and validation sets as JSON files
-        with open(f"train_fold_{fold_idx + 1}.json", "w") as outfile:
-            json.dump(train_data, outfile)
+        fold_data = {
+            "training": train_data,
+            "validation": val_data
+        }
 
-        with open(f"val_fold_{fold_idx + 1}.json", "w") as outfile:
-            json.dump(val_data, outfile)
+        with open(f"fold_{fold_idx + 1}.json", "w") as outfile:
+            json.dump(fold_data, outfile)
 
 # Example usage
 data_json = "./data_dir/Task1/brain.json"
