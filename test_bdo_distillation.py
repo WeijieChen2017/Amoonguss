@@ -75,7 +75,7 @@ print("alt_blk_depth", test_dict["alt_blk_depth"])
 
 
 
-for path in [test_dict["save_folder"], test_dict["save_folder"]+test_dict["eval_save_folder"]]:
+for path in [test_dict["save_folder"], test_dict["save_folder"]]:
     if not os.path.exists(path):
         os.mkdir(path)
 
