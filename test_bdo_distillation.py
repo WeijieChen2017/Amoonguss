@@ -122,13 +122,13 @@ model_state_dict = torch.load(target_model, map_location=torch.device('cpu'))
 print("--->", target_model, " is loaded.")
 
 model = UNet( 
-    spatial_dims=train_dict["model_related"]["spatial_dims"],
-    in_channels=train_dict["model_related"]["in_channels"],
-    out_channels=train_dict["model_related"]["out_channels"],
-    channels=(40, 80, 160, 320),
+    spatial_dims=train_dict["model_para"]["spatial_dims"],
+    in_channels=train_dict["model_para"]["in_channels"],
+    out_channels=train_dict["model_para"]["out_channels"],
+    channels=train_dict["model_para"]["channels"],
     # channels=train_dict["GROWTH_epochs"][stage_idx]["model_channels"],
-    strides=train_dict["model_related"]["strides"],
-    num_res_units=train_dict["model_related"]["num_res_units"]
+    strides=train_dict["model_para"]["strides"],
+    num_res_units=train_dict["model_para"]["num_res_units"]
     )
 
 model.load_state_dict(model_state_dict)
