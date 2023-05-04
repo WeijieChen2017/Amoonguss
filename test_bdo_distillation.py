@@ -75,7 +75,7 @@ print("alt_blk_depth", test_dict["alt_blk_depth"])
 
 
 
-for path in [test_dict["save_folder"], test_dict["save_folder"]]:
+for path in [test_dict["save_folder"]]:
     if not os.path.exists(path):
         os.mkdir(path)
 
@@ -123,7 +123,7 @@ print("--->", target_model, " is loaded.")
 # format is model_best_193.pth, take the number 193
 model_epoch = int(os.path.basename(target_model).split("_")[2].split(".")[0])
 test_dict["eval_save_folder"] = "pred_{:04d}".format(model_epoch)
-for path in [test_dict["eval_save_folder"]]:
+for path in [train_dict["save_folder"]+test_dict["eval_save_folder"]]:
     if not os.path.exists(path):
         os.mkdir(path)
 
