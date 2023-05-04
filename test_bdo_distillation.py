@@ -27,7 +27,7 @@ model_list = [
     # ["syn_DLE_1114444_e400_lrn4", [3], [1,1,1,4,4,4,4], [[], [], [], [], [], [], []], 0],
     # ["syn_DLE_4444111_e400_lrn4", [3], [4,4,4,4,1,1,1], [[], [], [], [], [], [], []], 0],
     # ["syn_DLE_4444444_e400_lrn4", [3], [4,4,4,4,4,4,4], [[], [], [], [], [], [], []], 0],
-    ["unet_GROWTH_v1_8066_8-16-24-32-40_8888444", [4], [8,8,8,8,4,4,4], [[], [], [], [], [], [], []], 0],
+    ["unet_GROWTH_v1_8066_8-16-24-32-40_8888444", [4], [8,8,8,8,4,4,4], [[], [], [], [], [], [], []], 0, 8066],
 ]
 
 
@@ -44,6 +44,7 @@ alt_block_num = model_list[current_model_idx][2]
 block_kickout = model_list[current_model_idx][3]
 # block_kickout = []
 eval_start = model_list[current_model_idx][4]
+random_seed = model_list[current_model_idx][5]
 
 
 # for name in model_list:
@@ -64,7 +65,7 @@ test_dict["save_tag"] = ""
 
 train_dict = np.load(test_dict["save_folder"]+"dict.npy", allow_pickle=True)[()]
 
-test_dict["seed"] = train_dict["seed"]
+test_dict["seed"] = random_seed
 test_dict["input_size"] = train_dict["input_size"]
 # test_dict["alt_blk_depth"] = train_dict["model_para"]["macro_dropout"]
 test_dict["alt_blk_depth"] = alt_block_num
