@@ -13,7 +13,7 @@ def build_tree(folder, data, category):
                 build_tree(entry_path, data, category)
 
 # Replace 'your_folder_path' with the path to your folder
-your_folder_path = './data_dir/Task1'
+your_folder_path = './data_dir/Task1/'
 
 brain_data = {"MR": [], "CT": [], "MASK": []}
 pelvis_data = {"MR": [], "CT": [], "MASK": []}
