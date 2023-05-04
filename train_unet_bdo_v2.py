@@ -165,6 +165,7 @@ optim = torch.optim.AdamW(
 # ==================== data division ====================
 
 data_div = np.load(os.path.join(train_dict["base_model_folder"], "data_division.npy"), allow_pickle=True)[()]
+np.save(train_dict["save_folder"]+"data_division.npy", data_div)
 train_list = data_div["train_list_X"]
 val_list = data_div["val_list_X"]
 test_list = data_div["test_list_X"]
