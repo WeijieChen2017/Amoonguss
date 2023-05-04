@@ -57,7 +57,7 @@ test_dict["gpu_ids"] = gpu_list
 test_dict["eval_file_cnt"] = 5
 # test_dict["best_model_name"] = "model_best_193.pth"
 # test_dict["eval_sample"] = 100
-test_dict["eval_save_folder"] = "pred_0027"
+
 test_dict["special_cases"] = []
 test_dict["eval_start"] = eval_start
 
@@ -120,6 +120,12 @@ if "curr" in model_list[-1]:
 target_model = model_list[-1]
 model_state_dict = torch.load(target_model, map_location=torch.device('cpu'))
 print("--->", target_model, " is loaded.")
+# format is model_best_193.pth, take the number 193
+model_epoch = int(os.path.basename(target_model).split("_")[2].split(".")[0])
+test_dict["eval_save_folder"] = "pred_{:04d}".format(model_epoch)
+for path in [test_dict["eval_save_folder"]]:
+    if not os.path.exists(path):
+        os.mkdir(path)
 
 unet_dict = train_dict["model_para"]
 
