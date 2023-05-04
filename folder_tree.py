@@ -17,7 +17,6 @@ def build_tree(folder, data):
 
 # Replace 'your_folder_path' with the path to your folder
 your_folder_path = './data_dir/Task1/'
-build_tree(your_folder_path)
 
 data = {
     "brain": {"MR": [], "CT": [], "MASK": []},
