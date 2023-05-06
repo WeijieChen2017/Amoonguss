@@ -178,7 +178,7 @@ val_transforms = Compose(
         EnsureChannelFirstd(keys=["MR", "CT", "MASK"]),
         Orientationd(keys=["MR", "CT", "MASK"], axcodes="RAS"),
         Spacingd(
-            keys=["image", "label"],
+            keys=["MR", "CT", "MASK"],
             pixdim=(1, 1, 1),
             mode=("bilinear", "bilinear", "nearest"),
         ),
