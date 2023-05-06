@@ -70,7 +70,7 @@ for path in [train_dict["save_folder"], train_dict["save_folder"]+"npy/", train_
         os.mkdir(path)
 
 
-from monai.losses import SmoothL1Loss
+from torch.nn import SmoothL1Loss
 from model import UNet_GROWTH
 
 
