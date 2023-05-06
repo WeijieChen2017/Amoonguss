@@ -218,10 +218,10 @@ n_fold = train_dict["num_fold"]
 curr_fold = train_dict["current_fold"]
 
 split_json = root_dir + f"fold_{curr_fold + 1}.json"
-with open(data_json, "r") as f:
-    datasets = json.load(f)
-datalist = load_decathlon_datalist(datasets, True, "training")
-val_files = load_decathlon_datalist(datasets, True, "validation")
+# with open(data_json, "r") as f:
+#     datasets = json.load(f)
+datalist = load_decathlon_datalist(split_json, True, "training")
+val_files = load_decathlon_datalist(split_json, True, "validation")
 train_ds = CacheDataset(
     data=datalist,
     transform=train_transforms,
