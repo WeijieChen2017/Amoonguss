@@ -2,8 +2,16 @@ import os
 import time
 
 model_list = [
-    ["Quaxly_brain_v1", [4], 912, 5],
-    ["Quaxly_pelvis_v1", [4], 912, 5],
+    ["Quaxly_brain_v1", [4], 912, 5, 0],
+    ["Quaxly_pelvis_v1", [4], 912, 5, 0],
+    ["Quaxly_brain_v1", [4], 912, 5, 1],
+    ["Quaxly_pelvis_v1", [4], 912, 5, 1],
+    ["Quaxly_brain_v1", [4], 912, 5, 2],
+    ["Quaxly_pelvis_v1", [4], 912, 5, 2],
+    ["Quaxly_brain_v1", [4], 912, 5, 3],
+    ["Quaxly_pelvis_v1", [4], 912, 5, 3],
+    ["Quaxly_brain_v1", [4], 912, 5, 4],
+    ["Quaxly_pelvis_v1", [4], 912, 5, 4],
 ]
 
 print("Model index: ", end="")
@@ -18,6 +26,7 @@ train_dict["gpu_ids"] = model_list[current_model_idx][1]
 train_dict["random_seed"] = model_list[current_model_idx][2]
 train_dict["organ"] = "brain" if "brain" in train_dict["project_name"].lower() else "pelvis"
 train_dict["num_fold"] = model_list[current_model_idx][3]
+train_dict["current_fold"] = model_list[current_model_idx][4]
 
 gpu_list = ','.join(str(x) for x in train_dict["gpu_ids"])
 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
@@ -26,10 +35,10 @@ import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-train_dict["loss_term"] = "SmoothL1Loss"
 train_dict["optimizer"] = "AdamW"
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["input_size"] = [96, 96, 96]
+
 train_dict["GROWTH_epochs"] = [
     {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 25, "batch" : 32, "lr": 1e-3, "loss": "l2",},
     {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 7e-4, "loss": "l2",},
@@ -38,11 +47,13 @@ train_dict["GROWTH_epochs"] = [
     {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
 ]
 
+train_dict["epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
+train_dict["batch"] = train_dict["GROWTH_epochs"][3]["batch"]
 unet_dict = {}
 unet_dict["spatial_dims"] = 3
 unet_dict["in_channels"] = 1
 unet_dict["out_channels"] = 1
-# unet_dict["channels"] = (40, 80, 160, 320)
+unet_dict["channels"] = train_dict["GROWTH_epochs"][3]["model_channels"]
 unet_dict["strides"] = (2, 2, 2)
 unet_dict["num_res_units"] = 6
 
@@ -50,6 +61,7 @@ train_dict["model_para"] = unet_dict
 
 train_dict["opt_betas"] = (0.9, 0.999) # default
 train_dict["opt_eps"] = 1e-8 # default
+train_dict["opt_lr"] = train_dict["GROWTH_epochs"][3]["lr"]
 train_dict["opt_weight_decay"] = 0.01 # default
 train_dict["amsgrad"] = False # default
 
@@ -58,14 +70,19 @@ for path in [train_dict["save_folder"], train_dict["save_folder"]+"npy/", train_
         os.mkdir(path)
 
 
+from monai.losses import SmoothL1Loss
+from model import UNet_GROWTH
+
+
 import os
+import json
 import shutil
 import tempfile
 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from monai.losses import DiceCELoss
+
 from monai.inferers import sliding_window_inference
 from monai.transforms import (
     AsDiscrete,
@@ -85,8 +102,6 @@ from util import (
 )
 
 from monai.config import print_config
-from monai.metrics import DiceMetric
-from monai.networks.nets import UNETR
 
 from monai.data import (
     DataLoader,
@@ -186,12 +201,16 @@ val_transforms = Compose(
 
 data_dir = "./data_dir/Task1/"
 data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else "pelvis.json"
-create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], data_dir)
+if train_dict["current_fold"] == 0:
+    create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], data_dir)
 
+# n_stage = len(train_dict["GROWTH_epochs"])
+n_fold = train_dict["num_fold"]
+curr_fold = train_dict["current_fold"]
 
-split_json = "dataset_0.json"
-
-datasets = data_dir + split_json
+split_json = root_dir + f"fold_{curr_fold + 1}.json"
+with open(data_json, "r") as f:
+    datasets = json.load(f)
 datalist = load_decathlon_datalist(datasets, True, "training")
 val_files = load_decathlon_datalist(datasets, True, "validation")
 train_ds = CacheDataset(
@@ -205,52 +224,46 @@ train_loader = DataLoader(train_ds, batch_size=1, shuffle=True, num_workers=8, p
 val_ds = CacheDataset(data=val_files, transform=val_transforms, cache_num=6, cache_rate=1.0, num_workers=4)
 val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=4, pin_memory=True)
 
-
-slice_map = {
-    "img0035.nii.gz": 170,
-    "img0036.nii.gz": 230,
-    "img0037.nii.gz": 204,
-    "img0038.nii.gz": 204,
-    "img0039.nii.gz": 204,
-    "img0040.nii.gz": 180,
-}
-case_num = 0
-img_name = os.path.split(val_ds[case_num]["image"].meta["filename_or_obj"])[1]
-img = val_ds[case_num]["image"]
-label = val_ds[case_num]["label"]
-img_shape = img.shape
-label_shape = label.shape
-print(f"image shape: {img_shape}, label shape: {label_shape}")
-plt.figure("image", (18, 6))
-plt.subplot(1, 2, 1)
-plt.title("image")
-plt.imshow(img[0, :, :, slice_map[img_name]].detach().cpu(), cmap="gray")
-plt.subplot(1, 2, 2)
-plt.title("label")
-plt.imshow(label[0, :, :, slice_map[img_name]].detach().cpu())
-plt.show()
+model = UNet_GROWTH( 
+    spatial_dims=unet_dict["spatial_dims"],
+    in_channels=unet_dict["in_channels"],
+    out_channels=unet_dict["out_channels"],
+    channels=unet_dict["channels"],
+    strides=unet_dict["strides"],
+    num_res_units=unet_dict["num_res_units"],
+    # partial_init=partial_init,
+    )
 
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# model = UNETR(
+#     in_channels=1,
+#     out_channels=14,
+#     img_size=(96, 96, 96),
+#     feature_size=16,
+#     hidden_size=768,
+#     mlp_dim=3072,
+#     num_heads=12,
+#     pos_embed="perceptron",
+#     norm_name="instance",
+#     res_block=True,
+#     dropout_rate=0.0,
+# ).to(device)
 
-model = UNETR(
-    in_channels=1,
-    out_channels=14,
-    img_size=(96, 96, 96),
-    feature_size=16,
-    hidden_size=768,
-    mlp_dim=3072,
-    num_heads=12,
-    pos_embed="perceptron",
-    norm_name="instance",
-    res_block=True,
-    dropout_rate=0.0,
-).to(device)
-
-loss_function = DiceCELoss(to_onehot_y=True, softmax=True)
 torch.backends.cudnn.benchmark = True
-optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
+# optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
+optimizer = torch.optim.AdamW(
+    model.parameters(),
+    lr = train_dict["opt_lr"],
+    betas = train_dict["opt_betas"],
+    eps = train_dict["opt_eps"],
+    weight_decay = train_dict["opt_weight_decay"],
+    amsgrad = train_dict["amsgrad"]
+    )
+
+criterion = SmoothL1Loss()
+
+print("Test successful, now exiting...")
+exit()
 
 
 def validation(epoch_iterator_val):
