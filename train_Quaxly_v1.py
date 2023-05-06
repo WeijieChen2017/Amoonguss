@@ -220,18 +220,26 @@ curr_fold = train_dict["current_fold"]
 split_json = root_dir + f"fold_{curr_fold + 1}.json"
 # with open(data_json, "r") as f:
 #     datasets = json.load(f)
-datalist = load_decathlon_datalist(split_json, True, "training")
+train_files = load_decathlon_datalist(split_json, True, "training")
 val_files = load_decathlon_datalist(split_json, True, "validation")
 train_ds = CacheDataset(
-    data=datalist,
+    data=train_files,
     transform=train_transforms,
-    cache_num=24,
+    # cache_num=24,
     cache_rate=1.0,
     num_workers=8,
 )
-train_loader = DataLoader(train_ds, batch_size=1, shuffle=True, num_workers=8, pin_memory=True)
-val_ds = CacheDataset(data=val_files, transform=val_transforms, cache_num=6, cache_rate=1.0, num_workers=4)
-val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=4, pin_memory=True)
+val_ds = CacheDataset(
+    data=val_files, 
+    transform=val_transforms, 
+    # cache_num=6, 
+    cache_rate=1.0, 
+    num_workers=4,
+)
+
+
+train_loader = DataLoader(train_ds, batch_size=6, shuffle=True, num_workers=8, pin_memory=True)
+val_loader = DataLoader(val_ds, batch_size=6, shuffle=False, num_workers=4, pin_memory=True)
 
 model = UNet_GROWTH( 
     spatial_dims=unet_dict["spatial_dims"],
