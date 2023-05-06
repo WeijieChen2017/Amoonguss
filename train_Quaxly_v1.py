@@ -211,7 +211,7 @@ val_transforms = Compose(
 data_dir = "./data_dir/Task1/"
 data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else "pelvis.json"
 if train_dict["current_fold"] == 0:
-    create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], data_dir)
+    create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
 
 # n_stage = len(train_dict["GROWTH_epochs"])
 n_fold = train_dict["num_fold"]
