@@ -182,18 +182,21 @@ val_transforms = Compose(
             pixdim=(1, 1, 1),
             mode=("bilinear", "bilinear", "nearest"),
         ),
-        s
-        CustomNormalize(
-            keys_group1=["MR"],
-            a_min_group1=[0],
-            a_max_group1=[3000],
-            b_min_group1=[0],
-            b_max_group1=[1],
-            keys_group2=["CT"],
-            a_min_group2=[-1024],
-            a_max_group2=[3000],
-            b_min_group2=[0],
-            b_max_group2=[1],
+        ScaleIntensityRanged(
+            keys=["MR"],
+            a_min=0,
+            a_max=3000,
+            b_min=0.0,
+            b_max=1.0,
+            clip=True,
+        ),
+        ScaleIntensityRanged(
+            keys=["CT"],
+            a_min=-1024,
+            a_max=3000,
+            b_min=0.0,
+            b_max=1.0,
+            clip=True,
         ),
         CropForegroundd(
             keys=["MR", "CT", "MASK"],
