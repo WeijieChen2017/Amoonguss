@@ -241,6 +241,9 @@ split_json = root_dir + f"fold_{curr_fold + 1}.json"
 
 train_files = load_decathlon_datalist(split_json, True, "training")
 val_files = load_decathlon_datalist(split_json, True, "validation")
+n_train_files = len(train_files)
+n_val_files = len(val_files)
+print("Load Training Files: ", n_train_files, "Load Validation Files: ", n_val_files)
 train_ds = CacheDataset(
     data=train_files,
     transform=train_transforms,
@@ -301,7 +304,6 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
 
     # training
     model.train()
-    n_train_files = len(train_loader)
     curr_iter = n_train_files // batch_size
     case_loss = np.zeros((curr_iter, 1))
     for step, batch in enumerate(train_loader):
@@ -325,7 +327,6 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     # validation
     if (idx_epoch+1) % train_dict["val_interval"] == 0:
         model.eval()
-        n_val_files = len(val_loader)
         curr_iter = n_val_files // batch_size
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
