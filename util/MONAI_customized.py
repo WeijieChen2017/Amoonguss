@@ -57,6 +57,7 @@ def create_nfold_json(data_json, nfold, random_seed, save_dir, organ):
             if case_id not in case_ids:
                 case_ids.append(case_id)
                 labels.append(key)
+                print(case_id, key)
 
     # Set the random seed for reproducibility
     random.seed(random_seed)
