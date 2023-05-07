@@ -54,7 +54,7 @@ train_dict["eval_per_epochs"] = 25
 train_dict["save_per_epochs"] = 100
 train_dict["continue_training_epoch"] = 0
 # train_dict["batch"] = train_dict["GROWTH_epochs"][3]["batch"]
-train_dict["start_batch"] = 32
+train_dict["start_batch"] = 16
 train_dict["batch_decay"] = 500 # batch into half every 500 epochs
 unet_dict = {}
 unet_dict["spatial_dims"] = 3
@@ -294,7 +294,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
 
     # check the idx_epoch to determine the batch size
     if idx_epoch in [0, 500, 1000, 1500, 2000, 2500]:
-        batch_stage = 5 - idx_epoch // train_dict["batch_decay"]
+        batch_stage = 4 - idx_epoch // train_dict["batch_decay"]
         batch_size = 2 ** batch_stage
         train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
         val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
