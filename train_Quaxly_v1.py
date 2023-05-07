@@ -227,7 +227,7 @@ val_transforms = Compose(
 )
 
 data_dir = "./data_dir/Task1/"
-data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else "pelvis.json"
+data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else data_dir+"pelvis.json"
 print("data_json: ", data_json)
 curr_fold = train_dict["current_fold"]
 if train_dict["current_fold"] == 0:
