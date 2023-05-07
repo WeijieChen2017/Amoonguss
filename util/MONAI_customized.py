@@ -97,6 +97,6 @@ def create_nfold_json(data_json, nfold, random_seed, save_dir, organ):
             "validation": val_data
         }
 
-        with open(save_dir+f"fold_{fold_idx + 1}_{organ}.json", "w") as outfile:
+        with open(save_dir+f"fold_{fold_idx + 1}.json", "w") as outfile:
             json.dump(fold_data, outfile)
 
