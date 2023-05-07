@@ -1,5 +1,6 @@
 import os
 import time
+import numpy as np
 
 model_list = [
     ["Quaxly_brain_v1", [4], 912, 5, 0],
@@ -47,8 +48,13 @@ train_dict["GROWTH_epochs"] = [
     {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
 ]
 
-train_dict["epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
-train_dict["batch"] = train_dict["GROWTH_epochs"][3]["batch"]
+# train_dict["train_epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
+train_dict["train_epochs"] = 2500
+train_dict["eval_per_epochs"] = 25
+train_dict["continue_training_epoch"] = 0
+# train_dict["batch"] = train_dict["GROWTH_epochs"][3]["batch"]
+train_dict["start_batch"] = 32
+train_dict["batch_decay"] = 500 # batch into half every 500 epochs
 unet_dict = {}
 unet_dict["spatial_dims"] = 3
 unet_dict["in_channels"] = 1
@@ -220,6 +226,7 @@ curr_fold = train_dict["current_fold"]
 split_json = root_dir + f"fold_{curr_fold + 1}.json"
 # with open(data_json, "r") as f:
 #     datasets = json.load(f)
+
 train_files = load_decathlon_datalist(split_json, True, "training")
 val_files = load_decathlon_datalist(split_json, True, "validation")
 train_ds = CacheDataset(
@@ -237,10 +244,6 @@ val_ds = CacheDataset(
     num_workers=4,
 )
 
-
-train_loader = DataLoader(train_ds, batch_size=6, shuffle=True, num_workers=8, pin_memory=True)
-val_loader = DataLoader(val_ds, batch_size=6, shuffle=False, num_workers=4, pin_memory=True)
-
 model = UNet_GROWTH( 
     spatial_dims=unet_dict["spatial_dims"],
     in_channels=unet_dict["in_channels"],
@@ -250,21 +253,6 @@ model = UNet_GROWTH(
     num_res_units=unet_dict["num_res_units"],
     # partial_init=partial_init,
     )
-
-
-# model = UNETR(
-#     in_channels=1,
-#     out_channels=14,
-#     img_size=(96, 96, 96),
-#     feature_size=16,
-#     hidden_size=768,
-#     mlp_dim=3072,
-#     num_heads=12,
-#     pos_embed="perceptron",
-#     norm_name="instance",
-#     res_block=True,
-#     dropout_rate=0.0,
-# ).to(device)
 
 torch.backends.cudnn.benchmark = True
 # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
@@ -279,8 +267,146 @@ optimizer = torch.optim.AdamW(
 
 criterion = SmoothL1Loss()
 
-print("Test successful, now exiting...")
-exit()
+# print("Test successful, now exiting...")
+# exit()
+
+# build new dataloader at epoch 0, 500, 1000, 1500, 2000, 2500
+
+best_val_loss = 1e1
+best_epoch = 0
+model.to(device)
+
+for idx_epoch_new in range(train_dict["train_epochs"]):
+    idx_epoch = idx_epoch_new + train_dict["continue_training_epoch"]
+    print("~~~~~~Epoch[{:03d}]~~~~~~".format(idx_epoch+1))
+
+    # check the idx_epoch to determine the batch size
+    if idx_epoch in [0, 500, 1000, 1500, 2000, 2500]:
+        batch_stage = 5 - idx_epoch // train_dict["batch_decay"]
+        batch_size = 2 ** batch_stage
+        train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
+        val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+
+    # training
+    model.train()
+    n_train_files = len(train_loader)
+    case_loss = np.zeros((len(file_list), 1))
+    for step, batch in enumerate(train_loader):
+        step += 1
+        # mr, ct, mask = (batch["MR"].cuda(), batch["CT"].cuda(), batch["MASK"].cuda())
+        mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
+        print("mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
+        if step == 10:
+            exit()
+
+
+
+    for package in [package_train, package_val]:
+
+        file_list = package[0]
+        isTrain = package[1]
+        isVal = package[2]
+        iter_tag = package[3]
+
+        if isTrain:
+            model.train()
+        else:
+            model.eval()
+
+        random.shuffle(file_list)
+        n_file = len(file_list)
+        
+        case_loss = np.zeros((len(file_list), 2))
+
+        # N, C, D, H, W
+        x_data = nib.load(file_list[0]).get_fdata()
+
+        for cnt_file, file_path in enumerate(file_list):
+            
+            x_path = file_path
+            y_path = file_path.replace("mr", "ct")
+            file_name = os.path.basename(file_path)
+            print(iter_tag + " ===> Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, cnt_file+1, n_file), x_path, "<---", end="")
+            x_file = nib.load(x_path)
+            y_file = nib.load(y_path)
+            x_data = x_file.get_fdata()
+            y_data = y_file.get_fdata()
+
+            batch_x = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1], train_dict["input_size"][2]))
+            batch_y = np.zeros((train_dict["batch"], 1, train_dict["input_size"][0], train_dict["input_size"][1], train_dict["input_size"][2]))
+
+            for idx_batch in range(train_dict["batch"]):
+                
+                d0_offset = np.random.randint(x_data.shape[0] - train_dict["input_size"][0])
+                d1_offset = np.random.randint(x_data.shape[1] - train_dict["input_size"][1])
+                d2_offset = np.random.randint(x_data.shape[2] - train_dict["input_size"][2])
+
+                x_slice = x_data[d0_offset:d0_offset+train_dict["input_size"][0],
+                                 d1_offset:d1_offset+train_dict["input_size"][1],
+                                 d2_offset:d2_offset+train_dict["input_size"][2]
+                                 ]
+                y_slice = y_data[d0_offset:d0_offset+train_dict["input_size"][0],
+                                 d1_offset:d1_offset+train_dict["input_size"][1],
+                                 d2_offset:d2_offset+train_dict["input_size"][2]
+                                 ]
+                batch_x[idx_batch, 0, :, :, :] = x_slice
+                batch_y[idx_batch, 0, :, :, :] = y_slice
+
+            batch_x = torch.from_numpy(batch_x).float().to(device)
+            batch_y = torch.from_numpy(batch_y).float().to(device)
+            
+            if isTrain:
+
+                optim.zero_grad()
+                y_hat = model(batch_x)
+                y_ref = model(batch_x)
+                loss_recon = loss_fnc(y_hat, batch_y)
+                loss_rdrop = loss_doc(y_ref, y_hat)
+                loss = loss_recon + loss_rdrop * train_dict["alpha_dropout_consistency"]
+                loss.backward()
+                optim.step()
+                case_loss[cnt_file, 0] = loss_recon.item()
+                case_loss[cnt_file, 1] = loss_rdrop.item()
+                print("Loss: ", np.sum(case_loss[cnt_file, :]), "Recon: ", loss_recon.item(), "Rdropout: ", loss_rdrop.item())
+
+            if isVal:
+
+                with torch.no_grad():
+                    y_hat = model(batch_x)
+                    y_ref = model(batch_x)
+                    loss_recon = loss_fnc(y_hat, batch_y)
+                    loss_rdrop = loss_doc(y_ref, y_hat)
+                    loss = loss_recon + loss_rdrop * train_dict["alpha_dropout_consistency"]
+
+                case_loss[cnt_file, 0] = loss_recon.item()
+                case_loss[cnt_file, 1] = loss_rdrop.item()
+                print("Loss: ", np.sum(case_loss[cnt_file, :]), "Recon: ", loss_recon.item(), "Rdropout: ", loss_rdrop.item())
+
+        epoch_loss_recon = np.mean(case_loss[:, 0])
+        epoch_loss_rdrop = np.mean(case_loss[:, 1])
+        # epoch_loss = np.mean(case_loss)
+        epoch_loss = epoch_loss_recon
+        print(iter_tag + " ===>===> Epoch[{:03d}]: ".format(idx_epoch+1), end='')
+        print("Loss: ", epoch_loss, "Recon: ", epoch_loss_recon, "Rdropout: ", epoch_loss_rdrop)
+        np.save(train_dict["save_folder"]+"loss/epoch_loss_"+iter_tag+"_{:03d}.npy".format(idx_epoch+1), case_loss)
+
+        if isVal:
+            # np.save(train_dict["save_folder"]+"npy/Epoch[{:03d}]_Case[{}]_".format(idx_epoch+1, file_name)+iter_tag+"_xf.npy", batch_xf.cpu().detach().numpy())
+            # np.save(train_dict["save_folder"]+"npy/Epoch[{:03d}]_Case[{}]_".format(idx_epoch+1, file_name)+iter_tag+"_fmap.npy", batch_fmap.cpu().detach().numpy())
+            torch.save(model.state_dict(), train_dict["save_folder"]+"model_curr.pth")
+            torch.save(optim.state_dict(), train_dict["save_folder"]+"optim_curr.pth")
+            
+            if epoch_loss < best_val_loss:
+                # save the best model
+                torch.save(model.state_dict(), train_dict["save_folder"]+"model_best_{:03d}.pth".format(idx_epoch + 1))
+                torch.save(optim.state_dict(), train_dict["save_folder"]+"optim_best_{:03d}.pth".format(idx_epoch + 1))
+                print("Checkpoint saved at Epoch {:03d}".format(idx_epoch + 1))
+                best_val_loss = epoch_loss
+
+        # del batch_x, batch_y
+        # gc.collect()
+        # torch.cuda.empty_cache()
+
 
 
 def validation(epoch_iterator_val):
@@ -338,62 +464,65 @@ def train(global_step, train_loader, dice_val_best, global_step_best):
     return global_step, dice_val_best, global_step_best
 
 
-max_iterations = 25000
-eval_num = 500
-post_label = AsDiscrete(to_onehot=14)
-post_pred = AsDiscrete(argmax=True, to_onehot=14)
-dice_metric = DiceMetric(include_background=True, reduction="mean", get_not_nans=False)
-global_step = 0
-dice_val_best = 0.0
-global_step_best = 0
-epoch_loss_values = []
-metric_values = []
-while global_step < max_iterations:
-    global_step, dice_val_best, global_step_best = train(global_step, train_loader, dice_val_best, global_step_best)
-model.load_state_dict(torch.load(os.path.join(root_dir, "best_metric_model.pth")))
 
 
-print(f"train completed, best_metric: {dice_val_best:.4f} " f"at iteration: {global_step_best}")
+
+# max_iterations = 25000
+# eval_num = 500
+# post_label = AsDiscrete(to_onehot=14)
+# post_pred = AsDiscrete(argmax=True, to_onehot=14)
+# dice_metric = DiceMetric(include_background=True, reduction="mean", get_not_nans=False)
+# global_step = 0
+# dice_val_best = 0.0
+# global_step_best = 0
+# epoch_loss_values = []
+# metric_values = []
+# while global_step < max_iterations:
+#     global_step, dice_val_best, global_step_best = train(global_step, train_loader, dice_val_best, global_step_best)
+# model.load_state_dict(torch.load(os.path.join(root_dir, "best_metric_model.pth")))
 
 
-plt.figure("train", (12, 6))
-plt.subplot(1, 2, 1)
-plt.title("Iteration Average Loss")
-x = [eval_num * (i + 1) for i in range(len(epoch_loss_values))]
-y = epoch_loss_values
-plt.xlabel("Iteration")
-plt.plot(x, y)
-plt.subplot(1, 2, 2)
-plt.title("Val Mean Dice")
-x = [eval_num * (i + 1) for i in range(len(metric_values))]
-y = metric_values
-plt.xlabel("Iteration")
-plt.plot(x, y)
-plt.show()
+# print(f"train completed, best_metric: {dice_val_best:.4f} " f"at iteration: {global_step_best}")
 
 
-case_num = 4
-model.load_state_dict(torch.load(os.path.join(root_dir, "best_metric_model.pth")))
-model.eval()
-with torch.no_grad():
-    img_name = os.path.split(val_ds[case_num]["image"].meta["filename_or_obj"])[1]
-    img = val_ds[case_num]["image"]
-    label = val_ds[case_num]["label"]
-    val_inputs = torch.unsqueeze(img, 1).cuda()
-    val_labels = torch.unsqueeze(label, 1).cuda()
-    val_outputs = sliding_window_inference(val_inputs, (96, 96, 96), 4, model, overlap=0.8)
-    plt.figure("check", (18, 6))
-    plt.subplot(1, 3, 1)
-    plt.title("image")
-    plt.imshow(val_inputs.cpu().numpy()[0, 0, :, :, slice_map[img_name]], cmap="gray")
-    plt.subplot(1, 3, 2)
-    plt.title("label")
-    plt.imshow(val_labels.cpu().numpy()[0, 0, :, :, slice_map[img_name]])
-    plt.subplot(1, 3, 3)
-    plt.title("output")
-    plt.imshow(torch.argmax(val_outputs, dim=1).detach().cpu()[0, :, :, slice_map[img_name]])
-    plt.show()
+# plt.figure("train", (12, 6))
+# plt.subplot(1, 2, 1)
+# plt.title("Iteration Average Loss")
+# x = [eval_num * (i + 1) for i in range(len(epoch_loss_values))]
+# y = epoch_loss_values
+# plt.xlabel("Iteration")
+# plt.plot(x, y)
+# plt.subplot(1, 2, 2)
+# plt.title("Val Mean Dice")
+# x = [eval_num * (i + 1) for i in range(len(metric_values))]
+# y = metric_values
+# plt.xlabel("Iteration")
+# plt.plot(x, y)
+# plt.show()
 
 
-if directory is None:
-    shutil.rmtree(root_dir)
+# case_num = 4
+# model.load_state_dict(torch.load(os.path.join(root_dir, "best_metric_model.pth")))
+# model.eval()
+# with torch.no_grad():
+#     img_name = os.path.split(val_ds[case_num]["image"].meta["filename_or_obj"])[1]
+#     img = val_ds[case_num]["image"]
+#     label = val_ds[case_num]["label"]
+#     val_inputs = torch.unsqueeze(img, 1).cuda()
+#     val_labels = torch.unsqueeze(label, 1).cuda()
+#     val_outputs = sliding_window_inference(val_inputs, (96, 96, 96), 4, model, overlap=0.8)
+#     plt.figure("check", (18, 6))
+#     plt.subplot(1, 3, 1)
+#     plt.title("image")
+#     plt.imshow(val_inputs.cpu().numpy()[0, 0, :, :, slice_map[img_name]], cmap="gray")
+#     plt.subplot(1, 3, 2)
+#     plt.title("label")
+#     plt.imshow(val_labels.cpu().numpy()[0, 0, :, :, slice_map[img_name]])
+#     plt.subplot(1, 3, 3)
+#     plt.title("output")
+#     plt.imshow(torch.argmax(val_outputs, dim=1).detach().cpu()[0, :, :, slice_map[img_name]])
+#     plt.show()
+
+
+# if directory is None:
+#     shutil.rmtree(root_dir)
