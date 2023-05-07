@@ -325,7 +325,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         step += 1
 
     # validation
-    if (idx_epoch+1) % train_dict["val_interval"] == 0:
+    if (idx_epoch+1) % train_dict["eval_per_epochs"] == 0:
         model.eval()
         curr_iter = n_val_files // batch_size + 1
         print("Validation: ", curr_iter, "iterations")
