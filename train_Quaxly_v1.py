@@ -236,8 +236,9 @@ if train_dict["current_fold"] == 0:
 # n_stage = len(train_dict["GROWTH_epochs"])
 n_fold = train_dict["num_fold"]
 curr_fold = train_dict["current_fold"]
+organ = train_dict["organ"]
 
-split_json = root_dir + f"fold_{curr_fold + 1}.json"
+split_json = root_dir + f"fold_{curr_fold + 1}_{organ}.json"
 # with open(data_json, "r") as f:
 #     datasets = json.load(f)
 
