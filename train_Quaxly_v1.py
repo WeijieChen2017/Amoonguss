@@ -294,7 +294,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
 
     # check the idx_epoch to determine the batch size
     if idx_epoch in [0, 500, 1000, 1500, 2000, 2500]:
-        batch_stage = 4 - idx_epoch // train_dict["batch_decay"]
+        batch_stage = 5 - idx_epoch // train_dict["batch_decay"]
         batch_size = 2 ** batch_stage
         train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
         val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
@@ -317,8 +317,8 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         final_loss = torch.sum(loss * mask) / torch.sum(mask)
         final_loss.backward()
         optim.step()
-        case_loss[step, 0] = final_loss.item()
-        print("Loss: ", np.sum(case_loss[curr_iter, :]))
+        case_loss[step] = final_loss.item()
+        print("Loss: ", case_loss[curr_iter])
         np.save(train_dict["save_folder"]+"loss/epoch_loss_train_{:04d}.npy".format(idx_epoch+1), case_loss)
 
 
@@ -339,11 +339,11 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
 
                 loss = criterion(ct * mask, sct * mask)
                 final_loss = torch.sum(loss * mask) / torch.sum(mask)
-                case_loss[step, 0] = final_loss.item()
-            print("Loss: ", np.sum(case_loss[curr_iter, :]))
+                case_loss[step] = final_loss.item()
+            print("Loss: ", case_loss[curr_iter])
             np.save(train_dict["save_folder"]+"loss/epoch_loss_val_{:04d}.npy".format(idx_epoch+1), case_loss)
 
-        best_mae = np.mean(case_loss[:, 0])
+        best_mae = np.mean(case_loss)
         if best_mae < best_val_loss:
             best_val_loss = best_mae
             best_epoch = idx_epoch+1
