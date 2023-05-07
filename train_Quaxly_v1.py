@@ -320,7 +320,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         final_loss.backward()
         optim.step()
         case_loss[step] = final_loss.item()
-        print("Loss: ", case_loss[curr_iter])
+        print("Loss: ", case_loss[step])
         np.save(train_dict["save_folder"]+"loss/epoch_loss_train_{:04d}.npy".format(idx_epoch+1), case_loss)
         step += 1
 
@@ -341,7 +341,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
                 loss = criterion(ct * mask, sct * mask)
                 final_loss = torch.sum(loss * mask) / torch.sum(mask)
                 case_loss[step] = final_loss.item()
-            print("Loss: ", case_loss[curr_iter])
+            print("Loss: ", case_loss[step])
             np.save(train_dict["save_folder"]+"loss/epoch_loss_val_{:04d}.npy".format(idx_epoch+1), case_loss)
             step += 1
 
