@@ -3,16 +3,16 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v1", [4], 912, 5, 0],
-    ["Quaxly_pelvis_v1", [4], 912, 5, 0],
-    ["Quaxly_brain_v1", [4], 912, 5, 1],
-    ["Quaxly_pelvis_v1", [4], 912, 5, 1],
-    ["Quaxly_brain_v1", [4], 912, 5, 2],
-    ["Quaxly_pelvis_v1", [4], 912, 5, 2],
-    ["Quaxly_brain_v1", [4], 912, 5, 3],
-    ["Quaxly_pelvis_v1", [4], 912, 5, 3],
-    ["Quaxly_brain_v1", [4], 912, 5, 4],
-    ["Quaxly_pelvis_v1", [4], 912, 5, 4],
+    ["Quaxly_brain_v1", [2], 912, 5, 0],
+    ["Quaxly_pelvis_v1", [3], 912, 5, 0],
+    ["Quaxly_brain_v1", [2], 912, 5, 1],
+    ["Quaxly_pelvis_v1", [3], 912, 5, 1],
+    ["Quaxly_brain_v1", [2], 912, 5, 2],
+    ["Quaxly_pelvis_v1", [3], 912, 5, 2],
+    ["Quaxly_brain_v1", [2], 912, 5, 3],
+    ["Quaxly_pelvis_v1", [3], 912, 5, 3],
+    ["Quaxly_brain_v1", [2], 912, 5, 4],
+    ["Quaxly_pelvis_v1", [3], 912, 5, 4],
 ]
 
 print("Model index: ", end="")
