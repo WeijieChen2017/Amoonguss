@@ -78,7 +78,7 @@ for path in [train_dict["save_folder"], train_dict["save_folder"]+"model/", trai
 
 
 from torch.nn import SmoothL1Loss
-from model import UNet_GROWTH
+from model import UNet_Quaxly
 
 
 import os
@@ -265,7 +265,7 @@ val_ds = CacheDataset(
     num_workers=4,
 )
 
-model = UNet_GROWTH( 
+model = UNet_Quaxly( 
     spatial_dims=unet_dict["spatial_dims"],
     in_channels=unet_dict["in_channels"],
     out_channels=unet_dict["out_channels"],
@@ -320,8 +320,12 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         print(" ===> Train:Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
             
         optim.zero_grad()
-        sct = model(mr)
-        loss = criterion(ct * mask, sct * mask)
+        sct, ds_1, ds_2, ds_3 = model(mr, is_deep_supervision=True)
+        loss_out = criterion(ct * mask, sct * mask)
+        loss_ds_1 = criterion(ct * mask, ds_1 * mask)
+        loss_ds_2 = criterion(ct * mask, ds_2 * mask)
+        loss_ds_3 = criterion(ct * mask, ds_3 * mask)
+        loss = loss_out + loss_ds_1 + loss_ds_2 + loss_ds_3
         final_loss = torch.sum(loss * mask) / torch.sum(mask)
         final_loss.backward()
         optim.step()
