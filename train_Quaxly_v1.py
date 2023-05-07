@@ -101,6 +101,7 @@ from monai.transforms import (
     RandFlipd,
     Spacingd,
     RandRotate90d,
+    RandSpatialCropd,
 )
 from util import (
     CustomNormalize,
@@ -156,6 +157,11 @@ train_transforms = Compose(
             select_fn=lambda x: x != 0,
             return_transform=False,
         ),
+        RandSpatialCropd(
+            keys=["MR", "CT", "MASK"],
+            roi_size=(64, 64, 64), 
+            random_size=False,
+        ),
         RandFlipd(
             keys=["MR", "CT", "MASK"],
             spatial_axis=[0],
@@ -210,6 +216,11 @@ val_transforms = Compose(
             margin=(0, 0, 0),
             select_fn=lambda x: x != 0,
             return_transform=False,
+        ),
+        RandSpatialCropd(
+            keys=["MR", "CT", "MASK"],
+            roi_size=(64, 64, 64), 
+            random_size=False,
         ),
     ]
 )
