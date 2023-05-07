@@ -72,7 +72,7 @@ train_dict["opt_lr"] = train_dict["GROWTH_epochs"][3]["lr"]
 train_dict["opt_weight_decay"] = 0.01 # default
 train_dict["amsgrad"] = False # default
 
-for path in [train_dict["save_folder"], train_dict["save_folder"]+"npy/", train_dict["save_folder"]+"loss/"]:
+for path in [train_dict["save_folder"], train_dict["save_folder"]+"model/", train_dict["save_folder"]+"loss/"]:
     if not os.path.exists(path):
         os.mkdir(path)
 
