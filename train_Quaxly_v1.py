@@ -290,12 +290,12 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     # training
     model.train()
     n_train_files = len(train_loader)
-    case_loss = np.zeros((len(file_list), 1))
+    case_loss = np.zeros((n_train_files, 1))
     for step, batch in enumerate(train_loader):
         step += 1
         # mr, ct, mask = (batch["MR"].cuda(), batch["CT"].cuda(), batch["MASK"].cuda())
         mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
-        print("mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
+        print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
         if step == 10:
             exit()
 
