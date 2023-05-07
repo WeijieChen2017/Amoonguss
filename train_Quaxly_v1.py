@@ -348,9 +348,10 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             np.save(train_dict["save_folder"]+"loss/fold_{:02d}_val_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
             step += 1
 
-        best_mae = np.mean(case_loss)
-        if best_mae < best_val_loss:
-            best_val_loss = best_mae
+        curr_mae = np.mean(case_loss)
+        print("Validation MAE: ", curr_mae, "Best MAE: ", best_val_loss, "Best Epoch: ", best_epoch)
+        if curr_mae < best_val_loss:
+            best_val_loss = curr_mae
             best_epoch = idx_epoch+1
             torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_best.pth".format(curr_fold))
             torch.save(optim.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_best.pth".format(curr_fold))
