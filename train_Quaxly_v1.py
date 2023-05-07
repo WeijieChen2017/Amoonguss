@@ -305,6 +305,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     # training
     model.train()
     curr_iter = n_train_files // batch_size + 1
+    print("Training: ", curr_iter, "iterations")
     case_loss = np.zeros((curr_iter, 1))
     for step, batch in enumerate(train_loader):
         mr, ct, mask = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK"].float().to(device))
@@ -327,6 +328,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     if (idx_epoch+1) % train_dict["val_interval"] == 0:
         model.eval()
         curr_iter = n_val_files // batch_size + 1
+        print("Validation: ", curr_iter, "iterations")
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
             mr, ct, mask = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK"].float().to(device))
@@ -342,7 +344,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             print("Loss: ", case_loss[curr_iter])
             np.save(train_dict["save_folder"]+"loss/epoch_loss_val_{:04d}.npy".format(idx_epoch+1), case_loss)
             step += 1
-            
+
         best_mae = np.mean(case_loss)
         if best_mae < best_val_loss:
             best_val_loss = best_mae
