@@ -304,7 +304,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
 
     # training
     model.train()
-    curr_iter = n_train_files // batch_size
+    curr_iter = n_train_files // batch_size + 1
     case_loss = np.zeros((curr_iter, 1))
     for step, batch in enumerate(train_loader):
         step += 1
@@ -327,7 +327,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     # validation
     if (idx_epoch+1) % train_dict["val_interval"] == 0:
         model.eval()
-        curr_iter = n_val_files // batch_size
+        curr_iter = n_val_files // batch_size + 1
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
             step += 1
