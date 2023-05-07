@@ -43,7 +43,7 @@ class AddRicianNoise(transforms.MapTransform):
             d[key] = noisy_image
         return d
 
-def create_nfold_json(data_json, nfold, random_seed, save_dir):
+def create_nfold_json(data_json, nfold, random_seed, save_dir, organ):
     # Load the JSON data
     with open(data_json, "r") as f:
         data = json.load(f)
@@ -97,6 +97,6 @@ def create_nfold_json(data_json, nfold, random_seed, save_dir):
             "validation": val_data
         }
 
-        with open(save_dir+f"fold_{fold_idx + 1}.json", "w") as outfile:
+        with open(save_dir+f"fold_{fold_idx + 1}_{organ}.json", "w") as outfile:
             json.dump(fold_data, outfile)
 
