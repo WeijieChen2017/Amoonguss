@@ -307,7 +307,6 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     curr_iter = n_train_files // batch_size + 1
     case_loss = np.zeros((curr_iter, 1))
     for step, batch in enumerate(train_loader):
-        step += 1
         mr, ct, mask = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK"].float().to(device))
         # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
         # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
@@ -322,7 +321,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         case_loss[step] = final_loss.item()
         print("Loss: ", case_loss[curr_iter])
         np.save(train_dict["save_folder"]+"loss/epoch_loss_train_{:04d}.npy".format(idx_epoch+1), case_loss)
-
+        step += 1
 
     # validation
     if (idx_epoch+1) % train_dict["val_interval"] == 0:
@@ -330,7 +329,6 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         curr_iter = n_val_files // batch_size + 1
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
-            step += 1
             mr, ct, mask = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK"].float().to(device))
             # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
             # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
@@ -343,7 +341,8 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
                 case_loss[step] = final_loss.item()
             print("Loss: ", case_loss[curr_iter])
             np.save(train_dict["save_folder"]+"loss/epoch_loss_val_{:04d}.npy".format(idx_epoch+1), case_loss)
-
+            step += 1
+            
         best_mae = np.mean(case_loss)
         if best_mae < best_val_loss:
             best_val_loss = best_mae
