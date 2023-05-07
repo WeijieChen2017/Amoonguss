@@ -228,7 +228,7 @@ val_transforms = Compose(
 
 data_dir = "./data_dir/Task1/"
 data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else "pelvis.json"
-n_fold = train_dict["current_fold"]
+curr_fold = train_dict["current_fold"]
 if train_dict["current_fold"] == 0:
     create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
 
@@ -322,7 +322,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         optim.step()
         case_loss[step] = final_loss.item()
         print("Loss: ", case_loss[step])
-        np.save(train_dict["save_folder"]+"loss/fold_{:02d}_epoch_loss_train_{:04d}.npy".format(n_fold, idx_epoch+1), case_loss)
+        np.save(train_dict["save_folder"]+"loss/fold_{:02d}_epoch_loss_train_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
         step += 1
 
     # validation
@@ -343,21 +343,21 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
                 final_loss = torch.sum(loss * mask) / torch.sum(mask)
                 case_loss[step] = final_loss.item()
             print("Loss: ", case_loss[step])
-            np.save(train_dict["save_folder"]+"loss/fold_{:02d}_epoch_loss_val_{:04d}.npy".format(n_fold, idx_epoch+1), case_loss)
+            np.save(train_dict["save_folder"]+"loss/fold_{:02d}_epoch_loss_val_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
             step += 1
 
         best_mae = np.mean(case_loss)
         if best_mae < best_val_loss:
             best_val_loss = best_mae
             best_epoch = idx_epoch+1
-            torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_best_{:04d}.pth".format(n_fold, idx_epoch+1))
-            torch.save(optim.state_dict(), train_dict["save_folder"]+"model/optim_{:02d}_best_{:04d}.pth".format(n_fold, idx_epoch+1))
+            torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_best_{:04d}.pth".format(curr_fold, idx_epoch+1))
+            torch.save(optim.state_dict(), train_dict["save_folder"]+"model/optim_{:02d}_best_{:04d}.pth".format(curr_fold, idx_epoch+1))
             print("Best model saved at epoch {:03d} with MAE {:03f}".format(best_epoch, best_val_loss*4024))
 
     # save the model every train_dict["save_per_epochs"] epochs
     if (idx_epoch+1) % train_dict["save_per_epochs"] == 0:
-        torch.save(model.state_dict(), train_dict["save_folder"]+"model/model_{:02d}_{:04d}.pth".format(n_fold, idx_epoch+1))
-        torch.save(optim.state_dict(), train_dict["save_folder"]+"model/optim_{:02d}_{:04d}.pth".format(n_fold, idx_epoch+1))
+        torch.save(model.state_dict(), train_dict["save_folder"]+"model/model_{:02d}_{:04d}.pth".format(curr_fold, idx_epoch+1))
+        torch.save(optim.state_dict(), train_dict["save_folder"]+"model/optim_{:02d}_{:04d}.pth".format(curr_fold, idx_epoch+1))
         print("Model saved at epoch {:03d}".format(idx_epoch+1))
     
 # def validation(epoch_iterator_val):
