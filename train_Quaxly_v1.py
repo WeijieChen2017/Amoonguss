@@ -306,7 +306,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     case_loss = np.zeros((curr_iter, 1))
     for step, batch in enumerate(train_loader):
         step += 1
-        mr, ct, mask = (batch["MR"].to(device), batch["CT"].to(device), batch["MASK"].to(device))
+        mr, ct, mask = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK"].float().to(device))
         # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
         # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
         print(" ===> Train:Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
@@ -334,7 +334,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
             step += 1
-            mr, ct, mask = (batch["MR"].to(device), batch["CT"].to(device), batch["MASK"].to(device))
+            mr, ct, mask = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK"].float().to(device))
             # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
             # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
             print(" ===> Validation: Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
