@@ -4,8 +4,8 @@ import numpy as np
 import nibabel as nib
 
 model_list = [
-    ["Quaxly_brain_v1", [1], 912, 5, 0],
-    ["Quaxly_pelvis_v1", [1], 912, 5, 0],
+    ["Quaxly_brain_v2", [1], 912, 6, 0],
+    ["Quaxly_pelvis_v2", [1], 912, 6, 0],
 ]
 
 print("Model index: ", end="")
@@ -53,9 +53,9 @@ unet_dict = {}
 unet_dict["spatial_dims"] = 3
 unet_dict["in_channels"] = 1
 unet_dict["out_channels"] = 1
-unet_dict["channels"] = train_dict["GROWTH_epochs"][3]["model_channels"]
-unet_dict["strides"] = (2, 2, 2)
-unet_dict["num_res_units"] = 6
+unet_dict["channels"] = (16, 32, 64, 128, 256)
+unet_dict["strides"] = (2, 2, 2, 2)
+unet_dict["num_res_units"] = 4
 
 train_dict["model_para"] = unet_dict
 
@@ -101,7 +101,7 @@ for idx_fold in range(n_fold):
     print("best_model: ", best_model)
     best_model = torch.load(best_model)
 
-    model = UNet_GROWTH( 
+    model = UNet_Quaxly( 
         spatial_dims=unet_dict["spatial_dims"],
         in_channels=unet_dict["in_channels"],
         out_channels=unet_dict["out_channels"],
@@ -131,7 +131,6 @@ for idx_fold in range(n_fold):
         ct_data = ct_file.get_fdata()
         mask_data = mask_file.get_fdata()
 
-        mr_data = mr_data / 3000
         input_data = np.expand_dims(mr_data, (0,1))
         input_data = torch.from_numpy(input_data).float().to(device)
 
