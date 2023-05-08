@@ -61,7 +61,7 @@ unet_dict = {}
 unet_dict["spatial_dims"] = 3
 unet_dict["in_channels"] = 1
 unet_dict["out_channels"] = 1
-unet_dict["channels"] = train_dict["GROWTH_epochs"][3]["model_channels"]
+unet_dict["channels"] = (40, 80, 160, 240, 320)
 unet_dict["strides"] = (2, 2, 2)
 unet_dict["num_res_units"] = 6
 
@@ -69,7 +69,7 @@ train_dict["model_para"] = unet_dict
 
 train_dict["opt_betas"] = (0.9, 0.999) # default
 train_dict["opt_eps"] = 1e-8 # default
-train_dict["opt_lr"] = train_dict["GROWTH_epochs"][3]["lr"]
+train_dict["opt_lr"] = 1e-4
 train_dict["opt_weight_decay"] = 0.01 # default
 train_dict["amsgrad"] = False # default
 
@@ -287,6 +287,13 @@ optim = torch.optim.AdamW(
     amsgrad = train_dict["amsgrad"]
     )
 
+scheduler = optim.lr_scheduler.CosineAnnealingLR(
+    optim, 
+    T_max=500, 
+    eta_min=1e-5,
+)
+
+
 criterion = SmoothL1Loss()
 
 # print("Test successful, now exiting...")
@@ -333,6 +340,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         case_loss[step] = final_loss.item()
         print("Loss: ", case_loss[step])
         np.save(train_dict["save_folder"]+"loss/fold_{:02d}_train_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
+        scheduler.step()
         step += 1
 
     # validation
@@ -375,12 +383,14 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             best_epoch = idx_epoch+1
             torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_best.pth".format(curr_fold))
             torch.save(optim.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_best.pth".format(curr_fold))
+            torch.save(scheduler.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_scheduler_best.pth".format(curr_fold))
             print("Best model saved at epoch {:03d} with MAE {:03f}".format(best_epoch, best_val_loss*4024))
 
     # save the model every train_dict["save_per_epochs"] epochs
     if (idx_epoch+1) % train_dict["save_per_epochs"] == 0:
         torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_{:04d}.pth".format(curr_fold, idx_epoch+1))
         torch.save(optim.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_{:04d}.pth".format(curr_fold, idx_epoch+1))
+        torch.save(scheduler.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_scheduler_{:04d}.pth".format(curr_fold, idx_epoch+1))
         print("Model saved at epoch {:03d}".format(idx_epoch+1))
     
 
