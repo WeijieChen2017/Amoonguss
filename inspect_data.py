@@ -33,7 +33,7 @@ def process_volumes(data_dir, task, item_code):
 
 data_dir = "./data_dir"
 task = "Task1"
-item_code = "brain"  # or "pelvis"
+item_code = "pelvis"  # "brain" or "pelvis"
 
 max_size, min_size = process_volumes(data_dir, task, item_code)
 
