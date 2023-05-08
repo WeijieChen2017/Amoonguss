@@ -174,7 +174,7 @@ for idx_fold in range(n_fold):
         )
     model.load_state_dict(last_model)
     model.eval()
-    model.to_(device)
+    model.to(device)
     n_val_files = len(val_files)
     mae_val = np.zeros(n_val_files)
 
