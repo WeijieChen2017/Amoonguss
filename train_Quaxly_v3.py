@@ -50,8 +50,8 @@ train_dict["GROWTH_epochs"] = [
 ]
 
 # train_dict["train_epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
-train_dict["train_epochs"] = 25000
-train_dict["eval_per_epochs"] = 50
+train_dict["train_epochs"] = 10500
+train_dict["eval_per_epochs"] = 100
 train_dict["save_per_epochs"] = 1000
 train_dict["continue_training_epoch"] = 0
 # train_dict["batch"] = train_dict["GROWTH_epochs"][3]["batch"]
@@ -69,7 +69,7 @@ train_dict["model_para"] = unet_dict
 
 train_dict["opt_betas"] = (0.9, 0.999) # default
 train_dict["opt_eps"] = 1e-8 # default
-train_dict["opt_lr"] = 1e-4
+train_dict["opt_lr"] = 1e-2 # default
 train_dict["opt_weight_decay"] = 0.01 # default
 train_dict["amsgrad"] = False # default
 
@@ -88,7 +88,7 @@ for path in folders_to_create:
 from torch.nn import SmoothL1Loss
 from model import UNet_Quaxly
 from torch.optim import lr_scheduler
-
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, _LRScheduler
 
 import os
 import json
@@ -292,7 +292,7 @@ model = UNet_Quaxly(
 
 torch.backends.cudnn.benchmark = True
 # optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
-optim = torch.optim.AdamW(
+optimizer = torch.optim.AdamW(
     model.parameters(),
     lr = train_dict["opt_lr"],
     betas = train_dict["opt_betas"],
@@ -301,12 +301,37 @@ optim = torch.optim.AdamW(
     amsgrad = train_dict["amsgrad"]
     )
 
-scheduler = lr_scheduler.CosineAnnealingLR(
-    optim, 
-    T_max=500, 
-    eta_min=1e-5,
-)
+# scheduler = lr_scheduler.CosineAnnealingLR(
+#     optim, 
+#     T_max=500, 
+#     eta_min=1e-5,
+# )
 
+def custom_coefficient(x: int) -> float:
+    # return 10^(-x/3750) using numpy
+    return np.power(10, -x/3750)
+
+class CustomCosineAnnealingWarmRestarts(_LRScheduler):
+    def __init__(self, optimizer, T_0, T_mult=1, eta_min=0, last_epoch=-1, verbose=False):
+        self.base_scheduler = CosineAnnealingWarmRestarts(optimizer, T_0, T_mult, eta_min, last_epoch, verbose)
+        super(CustomCosineAnnealingWarmRestarts, self).__init__(optimizer, last_epoch, verbose)
+
+    def get_lr(self):
+        # Get the learning rates from the base scheduler
+        base_lrs = self.base_scheduler.get_lr()
+
+        # Multiply the learning rates with the custom coefficient
+        coeff = custom_coefficient(self.last_epoch)
+        return [lr * coeff for lr in base_lrs]
+
+    def step(self, epoch=None):
+        # Update the base scheduler's epoch counter
+        self.base_scheduler.step(epoch)
+        super().step(epoch)
+
+# Create the custom scheduler
+T_0 = 500  # The number of epochs for the first restart
+scheduler = CustomCosineAnnealingWarmRestarts(optimizer, T_0, T_mult=1, eta_min=1e-4)
 
 criterion = SmoothL1Loss()
 
@@ -341,7 +366,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
         print(" ===> Train:Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
             
-        optim.zero_grad()
+        optimizer.zero_grad()
         sct, ds_1, ds_2, ds_3 = model(mr, is_deep_supervision=True)
         loss_out = criterion(ct, sct)
         loss_ds_1 = criterion(ct, ds_1)
@@ -351,13 +376,13 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         # final_loss = torch.sum(loss * mask) / torch.sum(mask)
         final_loss = loss
         final_loss.backward()
-        optim.step()
+        optimizer.step()
         case_loss[step] = final_loss.item()
         print("Loss: ", case_loss[step], end="")
         np.save(train_dict["save_folder"]+"loss/fold_{:02d}_train_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
         current_lr = scheduler.get_last_lr()[0]
         print(f" lr:{current_lr}")
-        scheduler.step()
+        scheduler.step(idx_epoch)
         step += 1
 
     # validation
@@ -400,14 +425,14 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             best_val_loss = curr_mae
             best_epoch = idx_epoch+1
             torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_best.pth".format(curr_fold))
-            torch.save(optim.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_best.pth".format(curr_fold))
+            torch.save(optimizer.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_best.pth".format(curr_fold))
             torch.save(scheduler.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_scheduler_best.pth".format(curr_fold))
             print("Best model saved at epoch {:03d} with MAE {:03f}".format(best_epoch, best_val_loss))
 
     # save the model and data every train_dict["save_per_epochs"] epochs
     if (idx_epoch+1) % train_dict["save_per_epochs"] == 0:
         torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_{:04d}.pth".format(curr_fold, idx_epoch+1))
-        torch.save(optim.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_{:04d}.pth".format(curr_fold, idx_epoch+1))
+        torch.save(optimizer.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_{:04d}.pth".format(curr_fold, idx_epoch+1))
         torch.save(scheduler.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_scheduler_{:04d}.pth".format(curr_fold, idx_epoch+1))
         print("Model saved at epoch {:03d}".format(idx_epoch+1))
 
