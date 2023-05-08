@@ -321,7 +321,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         batch_stage = 5 - idx_epoch // train_dict["batch_decay"]
         batch_size = 2 ** batch_stage
         train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
-        val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
+        val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=4, pin_memory=True)
 
     # training
     model.train()
@@ -355,7 +355,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     # validation
     if (idx_epoch+1) % train_dict["eval_per_epochs"] == 0:
         model.eval()
-        curr_iter = n_val_files // batch_size + 1
+        curr_iter = n_val_files
         print("Validation: ", curr_iter, "iterations")
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
