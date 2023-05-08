@@ -218,7 +218,7 @@ val_transforms = Compose(
         ),
         SpatialPadd(
             keys=["MR", "CT", "MASK"],
-            spatial_size=(288, 288, 288),
+            spatial_size=(288, 288, 288) if train_dict["organ"] == "brain" else (640, 440, 160),
             mode=("constant", "constant", "constant"),
         ),
         # CropForegroundd(
@@ -386,7 +386,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             step += 1
 
         curr_mae = np.mean(case_loss)
-        print("Validation MAE: ", curr_mae, "Best MAE: ", best_val_loss, "Best Epoch: ", best_epoch)
+        print("Validation MAE: ", curr_mae, "Best MAE: ", best_val_loss*4024, "Best Epoch: ", best_epoch)
         if curr_mae < best_val_loss:
             best_val_loss = curr_mae
             best_epoch = idx_epoch+1
