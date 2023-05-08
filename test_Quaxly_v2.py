@@ -66,7 +66,6 @@ for path in [train_dict["save_folder"]+"eval_best/", train_dict["save_folder"]+"
 
 from model import UNet_Quaxly
 
-
 import os
 import json
 
