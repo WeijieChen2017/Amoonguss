@@ -163,7 +163,7 @@ train_transforms = Compose(
         ),
         RandSpatialCropSamplesd(
             keys=["MR", "CT", "MASK"],
-            num_samples = 16, 
+            num_samples = 2, 
             roi_size=train_dict["input_size"], 
             random_size=False,
         ),
@@ -215,13 +215,13 @@ val_transforms = Compose(
             b_max=1.0,
             clip=True,
         ),
-        CropForegroundd(
-            keys=["MR", "CT", "MASK"],
-            source_key="MASK",
-            margin=(0, 0, 0),
-            select_fn=lambda x: x != 0,
-            return_transform=False,
-        ),
+        # CropForegroundd(
+        #     keys=["MR", "CT", "MASK"],
+        #     source_key="MASK",
+        #     margin=(0, 0, 0),
+        #     select_fn=lambda x: x != 0,
+        #     return_transform=False,
+        # ),
         # RandSpatialCropSamplesd(
         #     keys=["MR", "CT", "MASK"],
         #     num_samples = 16, 
