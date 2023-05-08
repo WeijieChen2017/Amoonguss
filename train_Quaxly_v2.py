@@ -308,7 +308,7 @@ criterion = SmoothL1Loss()
 
 # build new dataloader at epoch 0, 500, 1000, 1500, 2000, 2500
 
-best_val_loss = 1e1
+best_val_loss = 1000
 best_epoch = 0
 model.to(device)
 
