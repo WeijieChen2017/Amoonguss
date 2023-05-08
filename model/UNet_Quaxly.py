@@ -243,9 +243,9 @@ class UNet_Quaxly(nn.Module):
                 dropout=self.dropout, bias=self.bias, last_conv_only=True, adn_ordering=self.adn_ordering))
 
         # deep supervision
-        self.ds_out_1 = nn.Conv3d(self.self.channels[1]+self.channels[0], self.out_channels, kernel_size=1, stride=1, padding=0, bias=True)
-        self.ds_out_2 = nn.Conv3d(self.self.channels[2]+self.channels[1], self.out_channels, kernel_size=1, stride=1, padding=0, bias=True)
-        self.ds_out_3 = nn.Conv3d(self.self.channels[3]+self.channels[2], self.out_channels, kernel_size=1, stride=1, padding=0, bias=True)
+        self.ds_out_1 = nn.Conv3d(self.channels[1]+self.channels[0], self.out_channels, kernel_size=1, stride=1, padding=0, bias=True)
+        self.ds_out_2 = nn.Conv3d(self.channels[2]+self.channels[1], self.out_channels, kernel_size=1, stride=1, padding=0, bias=True)
+        self.ds_out_3 = nn.Conv3d(self.channels[3]+self.channels[2], self.out_channels, kernel_size=1, stride=1, padding=0, bias=True)
 
         # # Set all parameters to zero
         # for param in self.parameters():
