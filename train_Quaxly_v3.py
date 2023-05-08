@@ -219,7 +219,7 @@ val_transforms = Compose(
         SpatialPadd(
             keys=["MR", "CT"],
             spatial_size=(288, 288, 288) if train_dict["organ"] == "brain" else (640, 440, 160),
-            mode=("constant", "constant", "constant"),
+            mode=("constant", "constant"),
         ),
         # CropForegroundd(
         #     keys=["MR", "CT", "MASK"],
