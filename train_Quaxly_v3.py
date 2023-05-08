@@ -3,12 +3,12 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v2", [3], 912, 6, 0],
-    ["Quaxly_brain_v2", [3], 912, 6, 1],
-    ["Quaxly_brain_v2", [4], 912, 6, 2],
-    ["Quaxly_brain_v2", [4], 912, 6, 3],
-    ["Quaxly_brain_v2", [5], 912, 6, 4],
-    ["Quaxly_brain_v2", [5], 912, 6, 5],
+    ["Quaxly_brain_v3", [3], 912, 6, 0],
+    ["Quaxly_brain_v3", [3], 912, 6, 1],
+    ["Quaxly_brain_v3", [4], 912, 6, 2],
+    ["Quaxly_brain_v3", [4], 912, 6, 3],
+    ["Quaxly_brain_v3", [5], 912, 6, 4],
+    ["Quaxly_brain_v3", [5], 912, 6, 5],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 0],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 1],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 2],
@@ -73,7 +73,14 @@ train_dict["opt_lr"] = 1e-4
 train_dict["opt_weight_decay"] = 0.01 # default
 train_dict["amsgrad"] = False # default
 
-for path in [train_dict["save_folder"], train_dict["save_folder"]+"model/", train_dict["save_folder"]+"loss/"]:
+folders_to_create = [
+    train_dict["save_folder"],
+    train_dict["save_folder"]+"model/",
+    train_dict["save_folder"]+"loss/",
+    train_dict["save_folder"]+"sample_cache/",
+]
+
+for path in folders_to_create:
     if not os.path.exists(path):
         os.mkdir(path)
 
@@ -397,12 +404,23 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             torch.save(scheduler.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_scheduler_best.pth".format(curr_fold))
             print("Best model saved at epoch {:03d} with MAE {:03f}".format(best_epoch, best_val_loss))
 
-    # save the model every train_dict["save_per_epochs"] epochs
+    # save the model and data every train_dict["save_per_epochs"] epochs
     if (idx_epoch+1) % train_dict["save_per_epochs"] == 0:
         torch.save(model.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_model_{:04d}.pth".format(curr_fold, idx_epoch+1))
         torch.save(optim.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_optim_{:04d}.pth".format(curr_fold, idx_epoch+1))
         torch.save(scheduler.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_scheduler_{:04d}.pth".format(curr_fold, idx_epoch+1))
         print("Model saved at epoch {:03d}".format(idx_epoch+1))
+
+        mr_cache = mr.detach().cpu().numpy()
+        ct_cache = ct.detach().cpu().numpy()
+        sct_cache = sct.detach().cpu().numpy()
+        sample_cache = {
+            "MR": mr_cache,
+            "CT": ct_cache,
+            "SCT": sct_cache,
+        }
+        np.save(train_dict["save_folder"]+"sample_cache/fold_{:02d}_sample_{:04d}.npy".format(curr_fold, idx_epoch+1), sample_cache)
+        print("Sample saved at epoch {:03d}".format(idx_epoch+1))
     
 
 print("Training finished!")
