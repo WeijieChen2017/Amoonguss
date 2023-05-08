@@ -174,7 +174,7 @@ train_transforms = Compose(
             prob=0.10,
         ),
         RandFlipd(
-            keys=["MR", "CT", "MASK"],
+            keys=["MR", "CT"],
             spatial_axis=[1],
             prob=0.10,
         ),
