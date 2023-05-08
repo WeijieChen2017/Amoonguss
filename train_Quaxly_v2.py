@@ -105,7 +105,8 @@ from monai.transforms import (
     Spacingd,
     RandRotate90d,
     # RandSpatialCropd,
-    RandSpatialCropSamplesd
+    RandSpatialCropSamplesd,
+    SpatialPadd,
 )
 from util import (
     CustomNormalize,
@@ -214,6 +215,11 @@ val_transforms = Compose(
             b_min=0.0,
             b_max=1.0,
             clip=True,
+        ),
+        SpatialPadd(
+            keys=["MR", "CT", "MASK"],
+            spatial_size=(),
+            mode=("constant", "constant", "constant"),
         ),
         # CropForegroundd(
         #     keys=["MR", "CT", "MASK"],
