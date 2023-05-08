@@ -94,7 +94,6 @@ for idx_fold in range(n_fold):
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
         datasets = json.load(f)
-        print(datasets)
         val_files = datasets["validation"]
 
     # test for the best model
@@ -112,7 +111,7 @@ for idx_fold in range(n_fold):
         )
     model.load_state_dict(best_model)
     model.eval()
-    model.to_(device)
+    model.to(device)
     n_val_files = len(val_files)
     mae_val = np.zeros(n_val_files)
 
