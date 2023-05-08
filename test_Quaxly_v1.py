@@ -90,7 +90,7 @@ organ = train_dict["organ"]
 root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 
 for idx_fold in range(n_fold):
-    curr_fold = idx_fold
+    curr_fold = idx_fold + 1
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
         datasets = json.load(f)
@@ -116,7 +116,7 @@ for idx_fold in range(n_fold):
     mae_val = np.zeros(n_val_files)
 
     for idx_case, val_case in enumerate(val_files):
-        print("[{:03d}]/[{:03d}] Processing: ".format(idx_case+1, n_val_files), val_case["MR"], end="")
+        print("[{:03d}]/[{:03d}] Processing: ".format(idx_case+1, n_val_files), end="<--->")
         mr_path = val_case["MR"]
         ct_path = val_case["CT"]
         mask_path = val_case["MASK"]
@@ -125,7 +125,7 @@ for idx_fold in range(n_fold):
         mask_file = nib.load(mask_path)
         # mr_path is like ./data_dir/Task_1/brain/1BA001/mr.nii.gz
         organ_case = mr_path.split("/")[-2]+"_"+mr_path.split("/")[-1]
-        print("Loaded: ", mr_path, end="")
+        print("Loaded: ", mr_path, end="<--->")
 
         mr_data = mr_file.get_fdata()
         ct_data = ct_file.get_fdata()
