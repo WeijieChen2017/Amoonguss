@@ -339,8 +339,10 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         final_loss.backward()
         optim.step()
         case_loss[step] = final_loss.item()
-        print("Loss: ", case_loss[step])
+        print("Loss: ", case_loss[step], end="")
         np.save(train_dict["save_folder"]+"loss/fold_{:02d}_train_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
+        current_lr = scheduler.get_last_lr()[0]
+        print(f" lr:{current_lr}")
         scheduler.step()
         step += 1
 
