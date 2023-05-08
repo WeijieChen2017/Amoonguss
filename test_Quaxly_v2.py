@@ -54,29 +54,21 @@ unet_dict["spatial_dims"] = 3
 unet_dict["in_channels"] = 1
 unet_dict["out_channels"] = 1
 unet_dict["channels"] = (16, 32, 64, 128, 256)
-unet_dict["strides"] = (2, 2, 2, 2)
+unet_dict["strides"] = (2, 2, 2)
 unet_dict["num_res_units"] = 4
 
 train_dict["model_para"] = unet_dict
-
-train_dict["opt_betas"] = (0.9, 0.999) # default
-train_dict["opt_eps"] = 1e-8 # default
-train_dict["opt_lr"] = train_dict["GROWTH_epochs"][3]["lr"]
-train_dict["opt_weight_decay"] = 0.01 # default
-train_dict["amsgrad"] = False # default
 
 for path in [train_dict["save_folder"]+"eval_best/", train_dict["save_folder"]+"eval_last/"]:
     if not os.path.exists(path):
         os.mkdir(path)
 
 
-from model import UNet_GROWTH
+from model import UNet_Quaxly
 
 
 import os
 import json
-import shutil
-import tempfile
 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -90,7 +82,7 @@ organ = train_dict["organ"]
 root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 
 for idx_fold in range(n_fold):
-    curr_fold = idx_fold + 1
+    curr_fold = idx_fold
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
         datasets = json.load(f)
@@ -124,13 +116,14 @@ for idx_fold in range(n_fold):
         ct_file = nib.load(ct_path)
         mask_file = nib.load(mask_path)
         # mr_path is like ./data_dir/Task_1/brain/1BA001/mr.nii.gz
-        organ_case = mr_path.split("/")[-2]+"_"+mr_path.split("/")[-1]
+        organ_case = mr_path.split("/")[-3]+"_"+mr_path.split("/")[-2]
         print("Loaded: ", mr_path, end="<--->")
 
         mr_data = mr_file.get_fdata()
         ct_data = ct_file.get_fdata()
         mask_data = mask_file.get_fdata()
 
+        mr_data = mr_data / 3000
         input_data = np.expand_dims(mr_data, (0,1))
         input_data = torch.from_numpy(input_data).float().to(device)
 
@@ -149,13 +142,15 @@ for idx_fold in range(n_fold):
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy())
+        sct = sct * mask_data
+        ct = ct_data * mask_data
         sct = sct * 4024 - 1024
-        ct = ct_data * 4024 - 1024
-
+        ct = ct * 4024 - 1024
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
-        masked_mae = np.sum(np.abs(sct * mask_data - ct * mask_data)) / np.sum(mask_data)
+
+        masked_mae = np.sum(np.abs(ct - sct)) / np.sum(mask_data)
         print("Masked MAE: ", masked_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_best/"+organ_case+"_sct.nii.gz"
@@ -170,7 +165,7 @@ for idx_fold in range(n_fold):
     print("last_model: ", last_model)
     last_model = torch.load(last_model)
 
-    model = UNet_GROWTH( 
+    model = UNet_Quaxly( 
         spatial_dims=unet_dict["spatial_dims"],
         in_channels=unet_dict["in_channels"],
         out_channels=unet_dict["out_channels"],
@@ -218,13 +213,14 @@ for idx_fold in range(n_fold):
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy())
+        sct = sct * mask_data
+        ct = ct_data * mask_data
         sct = sct * 4024 - 1024
-        ct = ct_data * 4024 - 1024
-
+        ct = ct * 4024 - 1024
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
-        masked_mae = np.sum(np.abs(sct * mask_data - ct * mask_data)) / np.sum(mask_data)
+        masked_mae = np.sum(np.abs(sct - ct)) / np.sum(mask_data)
         print("Masked MAE: ", masked_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_last/"+organ_case+"_sct.nii.gz"

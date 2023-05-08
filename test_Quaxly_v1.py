@@ -221,13 +221,14 @@ for idx_fold in range(n_fold):
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy())
+        sct = sct * mask_data
+        ct = ct_data * mask_data
         sct = sct * 4024 - 1024
-        ct = ct_data * 4024 - 1024
-
+        ct = ct * 4024 - 1024
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
-        masked_mae = np.sum(np.abs(sct * mask_data - ct * mask_data)) / np.sum(mask_data)
+        masked_mae = np.sum(np.abs(ct - sct)) / np.sum(mask_data)
         print("Masked MAE: ", masked_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_last/"+organ_case+"_sct.nii.gz"
