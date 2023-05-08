@@ -70,7 +70,6 @@ for path in [train_dict["save_folder"]+"eval_best/", train_dict["save_folder"]+"
         os.mkdir(path)
 
 
-from torch.nn import SmoothL1Loss
 from model import UNet_GROWTH
 
 
@@ -81,23 +80,21 @@ import tempfile
 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
-
 from monai.inferers import sliding_window_inference
 
 data_dir = "./data_dir/Task1/"
 data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else data_dir+"pelvis.json"
 print("data_json: ", data_json)
 n_fold = train_dict["num_fold"]
-
 organ = train_dict["organ"]
 root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 
 for idx_fold in range(n_fold):
     curr_fold = idx_fold
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
-    with open(data_json, "r") as f:
+    with open(split_json, "r") as f:
         datasets = json.load(f)
+        print(datasets)
         val_files = datasets["validation"]
 
     # test for the best model
