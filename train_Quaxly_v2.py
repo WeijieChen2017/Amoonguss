@@ -218,7 +218,7 @@ val_transforms = Compose(
         ),
         SpatialPadd(
             keys=["MR", "CT", "MASK"],
-            spatial_size=(),
+            spatial_size=(288, 288, 288),
             mode=("constant", "constant", "constant"),
         ),
         # CropForegroundd(
