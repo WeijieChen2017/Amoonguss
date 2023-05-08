@@ -214,24 +214,24 @@ class UNet_Quaxly(nn.Module):
                 act=self.act, norm=self.norm, dropout=self.dropout,
                 bias=self.bias, adn_ordering=self.adn_ordering)
         self.up4 = nn.Sequential(
-                Convolution(3, self.channels[4]+self.channels[3], self.channels[2], strides=self.strides[2],
+                Convolution(3, self.channels[4]+self.channels[3], self.channels[3], strides=self.strides[2],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
                 bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering),
-                ResidualUnit(3, self.channels[1], self.channels[1], strides=1,
+                ResidualUnit(3, self.channels[3], self.channels[3], strides=1,
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
                 dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering))
         self.up3 = nn.Sequential(
-                Convolution(3, self.channels[3]+self.channels[2], self.channels[1], strides=self.strides[2],
+                Convolution(3, self.channels[3]+self.channels[2], self.channels[2], strides=self.strides[2],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
                 bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering),
-                ResidualUnit(3, self.channels[1], self.channels[1], strides=1,
+                ResidualUnit(3, self.channels[2], self.channels[2], strides=1,
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
                 dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering))
         self.up2 = nn.Sequential(
-                Convolution(3, self.channels[2]+self.channels[1], self.channels[0], strides=self.strides[1],
+                Convolution(3, self.channels[2]+self.channels[1], self.channels[1], strides=self.strides[1],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
                 bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering),
-                ResidualUnit(3, self.channels[0], self.channels[0], strides=1,
+                ResidualUnit(3, self.channels[1], self.channels[1], strides=1,
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
                 dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering))
         self.up1 = nn.Sequential(
@@ -328,9 +328,9 @@ class UNet_Quaxly(nn.Module):
             ds_2 = self.ds_out_2(torch.cat([x2, x6], dim=1))
             ds_3 = self.ds_out_3(torch.cat([x3, x5], dim=1))
 
-            ds_out1 = F.interpolate(ds_out1, size=x.size()[2:], mode='bilinear', align_corners=True)
-            ds_out2 = F.interpolate(ds_out2, size=x.size()[2:], mode='bilinear', align_corners=True)
-            ds_out3 = F.interpolate(ds_out3, size=x.size()[2:], mode='bilinear', align_corners=True)
+            ds_out1 = F.interpolate(ds_1, size=x.size()[2:], mode='bilinear', align_corners=True)
+            ds_out2 = F.interpolate(ds_2, size=x.size()[2:], mode='bilinear', align_corners=True)
+            ds_out3 = F.interpolate(ds_3, size=x.size()[2:], mode='bilinear', align_corners=True)
 
             return x8, ds_out1, ds_out2, ds_out3
         else:
