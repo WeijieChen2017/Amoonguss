@@ -383,7 +383,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         np.save(train_dict["save_folder"]+"loss/fold_{:02d}_train_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
         current_lr = scheduler.get_last_lr()[0]
         print(f" lr:{current_lr}")
-        scheduler.step(idx_epoch)
+        scheduler.step()
         step += 1
 
     # validation
