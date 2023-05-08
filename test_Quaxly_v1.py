@@ -4,16 +4,8 @@ import numpy as np
 import nibabel as nib
 
 model_list = [
-    ["Quaxly_brain_v1", [4], 912, 5, 0],
-    ["Quaxly_brain_v1", [4], 912, 5, 1],
-    ["Quaxly_brain_v1", [4], 912, 5, 2],
-    ["Quaxly_brain_v1", [4], 912, 5, 3],
-    ["Quaxly_brain_v1", [4], 912, 5, 4],
-    ["Quaxly_pelvis_v1", [5], 912, 5, 0],
-    ["Quaxly_pelvis_v1", [5], 912, 5, 1],
-    ["Quaxly_pelvis_v1", [5], 912, 5, 2],
-    ["Quaxly_pelvis_v1", [5], 912, 5, 3],
-    ["Quaxly_pelvis_v1", [5], 912, 5, 4],
+    ["Quaxly_brain_v1", [1], 912, 5, 0],
+    ["Quaxly_pelvis_v1", [1], 912, 5, 0],
 ]
 
 print("Model index: ", end="")
