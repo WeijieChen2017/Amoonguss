@@ -150,13 +150,14 @@ for idx_fold in range(n_fold):
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy())
+        sct = sct * mask_data
+        ct = ct * mask_data
         sct = sct * 4024 - 1024
         ct = ct_data * 4024 - 1024
 
         sct = np.clip(sct, -1024, 3000)
-        sct = sct * mask_data
         ct = np.clip(ct, -1024, 3000)
-        ct = ct * mask_data
+
 
         masked_mae = np.sum(np.abs(ct - sct)) / np.sum(mask_data)
         print("Masked MAE: ", masked_mae)
