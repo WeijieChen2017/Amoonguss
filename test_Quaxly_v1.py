@@ -124,7 +124,7 @@ for idx_fold in range(n_fold):
         ct_file = nib.load(ct_path)
         mask_file = nib.load(mask_path)
         # mr_path is like ./data_dir/Task_1/brain/1BA001/mr.nii.gz
-        organ_case = mr_path.split("/")[-2]+"_"+mr_path.split("/")[-1]
+        organ_case = mr_path.split("/")[-3]+"_"+mr_path.split("/")[-2]
         print("Loaded: ", mr_path, end="<--->")
 
         mr_data = mr_file.get_fdata()
