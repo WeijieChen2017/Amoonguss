@@ -50,9 +50,9 @@ train_dict["GROWTH_epochs"] = [
 ]
 
 # train_dict["train_epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
-train_dict["train_epochs"] = 2500
-train_dict["eval_per_epochs"] = 25
-train_dict["save_per_epochs"] = 100
+train_dict["train_epochs"] = 25000
+train_dict["eval_per_epochs"] = 50
+train_dict["save_per_epochs"] = 1000
 train_dict["continue_training_epoch"] = 0
 # train_dict["batch"] = train_dict["GROWTH_epochs"][3]["batch"]
 train_dict["start_batch"] = 16
