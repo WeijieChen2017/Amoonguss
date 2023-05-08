@@ -3,12 +3,12 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v2", [1], 912, 6, 0],
-    ["Quaxly_brain_v2", [1], 912, 6, 1],
-    ["Quaxly_brain_v2", [3], 912, 6, 2],
-    ["Quaxly_brain_v2", [3], 912, 6, 3],
-    ["Quaxly_brain_v2", [7], 912, 6, 4],
-    ["Quaxly_brain_v2", [7], 912, 6, 5],
+    ["Quaxly_brain_v2", [3], 912, 6, 0],
+    ["Quaxly_brain_v2", [3], 912, 6, 1],
+    ["Quaxly_brain_v2", [4], 912, 6, 2],
+    ["Quaxly_brain_v2", [4], 912, 6, 3],
+    ["Quaxly_brain_v2", [5], 912, 6, 4],
+    ["Quaxly_brain_v2", [5], 912, 6, 5],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 0],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 1],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 2],
