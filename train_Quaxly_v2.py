@@ -80,6 +80,7 @@ for path in [train_dict["save_folder"], train_dict["save_folder"]+"model/", trai
 
 from torch.nn import SmoothL1Loss
 from model import UNet_Quaxly
+from torch.optim import lr_scheduler
 
 
 import os
@@ -287,7 +288,7 @@ optim = torch.optim.AdamW(
     amsgrad = train_dict["amsgrad"]
     )
 
-scheduler = optim.lr_scheduler.CosineAnnealingLR(
+scheduler = lr_scheduler.CosineAnnealingLR(
     optim, 
     T_max=500, 
     eta_min=1e-5,
