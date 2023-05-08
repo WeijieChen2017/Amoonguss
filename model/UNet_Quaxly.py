@@ -328,9 +328,9 @@ class UNet_Quaxly(nn.Module):
             ds_2 = self.ds_out_2(torch.cat([x2, x6], dim=1))
             ds_3 = self.ds_out_3(torch.cat([x3, x5], dim=1))
 
-            ds_out1 = F.interpolate(ds_1, size=x.size()[2:], mode='bilinear', align_corners=True)
-            ds_out2 = F.interpolate(ds_2, size=x.size()[2:], mode='bilinear', align_corners=True)
-            ds_out3 = F.interpolate(ds_3, size=x.size()[2:], mode='bilinear', align_corners=True)
+            ds_out1 = F.interpolate(ds_1, size=x.size()[1:], mode='bilinear', align_corners=True)
+            ds_out2 = F.interpolate(ds_2, size=x.size()[1:], mode='bilinear', align_corners=True)
+            ds_out3 = F.interpolate(ds_3, size=x.size()[1:], mode='bilinear', align_corners=True)
 
             return x8, ds_out1, ds_out2, ds_out3
         else:
