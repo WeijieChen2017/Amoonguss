@@ -90,7 +90,7 @@ organ = train_dict["organ"]
 root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 
 for idx_fold in range(n_fold):
-    curr_fold = idx_fold + 1
+    curr_fold = idx_fold
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
         datasets = json.load(f)
@@ -154,9 +154,11 @@ for idx_fold in range(n_fold):
         ct = ct_data * 4024 - 1024
 
         sct = np.clip(sct, -1024, 3000)
+        sct = sct * mask_data
         ct = np.clip(ct, -1024, 3000)
+        ct = ct * mask_data
 
-        masked_mae = np.sum(np.abs(sct * mask_data - ct * mask_data)) / np.sum(mask_data)
+        masked_mae = np.sum(np.abs(ct - sct)) / np.sum(mask_data)
         print("Masked MAE: ", masked_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_best/"+organ_case+"_sct.nii.gz"
