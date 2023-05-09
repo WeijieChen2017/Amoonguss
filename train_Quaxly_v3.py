@@ -3,12 +3,12 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v3", [3], 912, 6, 0],
-    ["Quaxly_brain_v3", [3], 912, 6, 1],
-    ["Quaxly_brain_v3", [4], 912, 6, 2],
-    ["Quaxly_brain_v3", [4], 912, 6, 3],
-    ["Quaxly_brain_v3", [5], 912, 6, 4],
-    ["Quaxly_brain_v3", [5], 912, 6, 5],
+    ["Quaxly_brain_v3a", [3], 912, 6, 0],
+    ["Quaxly_brain_v3a", [3], 912, 6, 1],
+    ["Quaxly_brain_v3a", [4], 912, 6, 2],
+    ["Quaxly_brain_v3a", [4], 912, 6, 3],
+    ["Quaxly_brain_v3a", [5], 912, 6, 4],
+    ["Quaxly_brain_v3a", [5], 912, 6, 5],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 0],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 1],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 2],
@@ -309,7 +309,8 @@ optimizer = torch.optim.AdamW(
 
 def custom_coefficient(x: int) -> float:
     # return 10^(-x/3750) using numpy
-    return np.power(10, -x/3750)
+    # (2000*5+2000*10+2000*19+2000*38+2000*76) ~= 300000 = 3e5
+    return np.power(10, -x/1.5e5)
 
 class CustomCosineAnnealingWarmRestarts(_LRScheduler):
     def __init__(self, optimizer, T_0, T_mult=1, eta_min=0, last_epoch=-1, verbose=False):
