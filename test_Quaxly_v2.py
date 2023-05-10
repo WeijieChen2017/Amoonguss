@@ -4,7 +4,7 @@ import numpy as np
 import nibabel as nib
 
 model_list = [
-    ["Quaxly_brain_v2", [1], 912, 6, 0],
+    ["Quaxly_brain_v3a", [1], 912, 6, 0],
     ["Quaxly_pelvis_v2", [1], 912, 6, 0],
 ]
 
