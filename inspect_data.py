@@ -31,11 +31,17 @@ def process_volumes(data_dir, task, item_code):
 
     return max_size, min_size
 
+def test_organ(organ, data_dir, task):
+    item_code = organ
+    max_size, min_size = process_volumes(data_dir, task, item_code)
+
+    print(organ+" Maximum size:", max_size)
+    print(organ+"Brain Minimum size:", min_size)
+
 data_dir = "./data_dir"
 task = "Task1"
-item_code = "pelvis"  # "brain" or "pelvis"
 
-max_size, min_size = process_volumes(data_dir, task, item_code)
+test_organ("brain", data_dir, task)
+test_organ("pelvis", data_dir, task)
 
-print("Maximum size:", max_size)
-print("Minimum size:", min_size)
+
