@@ -3,17 +3,18 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v3a", [3], 912, 6, 0],
-    ["Quaxly_brain_v3a", [3], 912, 6, 1],
-    ["Quaxly_brain_v3a", [5], 912, 6, 2], # dgx2
-    ["Quaxly_brain_v3a", [5], 912, 6, 3], # dgx2
-    ["Quaxly_brain_v3a", [5], 912, 6, 4],
-    ["Quaxly_brain_v3a", [5], 912, 6, 5],
-    # ["Quaxly_pelvis_v2", [5], 912, 5, 0],
-    # ["Quaxly_pelvis_v2", [5], 912, 5, 1],
-    # ["Quaxly_pelvis_v2", [5], 912, 5, 2],
-    # ["Quaxly_pelvis_v2", [5], 912, 5, 3],
-    # ["Quaxly_pelvis_v2", [5], 912, 5, 4],
+    ["Quaxly_brain_v3a", [3], 912, 6, 0, "brain"], # over
+    ["Quaxly_brain_v3a", [3], 912, 6, 1, "brain"], # over
+    ["Quaxly_brain_v3a", [3], 912, 6, 2, "brain"], #dgx1
+    ["Quaxly_brain_v3a", [3], 912, 6, 3, "brain"], #dgx1
+    ["Quaxly_brain_v3a", [5], 912, 6, 4, "brain"], # over
+    ["Quaxly_brain_v3a", [5], 912, 6, 5, "brain"], # over
+    ["Quaxly_task1_v3a", [5], 912, 6, 0, "task1"], #dgx1
+    ["Quaxly_task1_v3a", [5], 912, 6, 1, "task1"], #dgx1
+    ["Quaxly_task1_v3a", [5], 912, 6, 2, "task1"], #dgx2
+    ["Quaxly_task1_v3a", [5], 912, 6, 3, "task1"], #dgx2
+    ["Quaxly_task1_v3a", [7], 912, 6, 5, "task1"], #dgx2
+    ["Quaxly_task1_v3a", [7], 912, 6, 6, "task1"], #dgx2
 ]
 
 print("Model index: ", end="")
@@ -26,9 +27,9 @@ train_dict["time_stamp"] = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 train_dict["project_name"] = model_list[current_model_idx][0]
 train_dict["gpu_ids"] = model_list[current_model_idx][1]
 train_dict["random_seed"] = model_list[current_model_idx][2]
-train_dict["organ"] = "brain" if "brain" in train_dict["project_name"].lower() else "pelvis"
 train_dict["num_fold"] = model_list[current_model_idx][3]
 train_dict["current_fold"] = model_list[current_model_idx][4]
+train_dict["organ"] = model_list[current_model_idx][5]
 
 gpu_list = ','.join(str(x) for x in train_dict["gpu_ids"])
 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
@@ -225,7 +226,8 @@ val_transforms = Compose(
         ),
         SpatialPadd(
             keys=["MR", "CT"],
-            spatial_size=(288, 288, 288) if train_dict["organ"] == "brain" else (640, 440, 160),
+            # spatial_size=(288, 288, 288) if train_dict["organ"] == "brain" else (640, 440, 160),
+            spatial_size=(640, 440, 288),
             mode=("constant", "constant"),
         ),
         # CropForegroundd(
