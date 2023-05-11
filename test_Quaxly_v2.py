@@ -82,7 +82,7 @@ organ = train_dict["organ"]
 root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 
 # for idx_fold in range(n_fold):
-for idx_fold in [1,2,5,6]:
+for idx_fold in [0,1,4,5]:
     curr_fold = idx_fold
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
