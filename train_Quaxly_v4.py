@@ -14,8 +14,8 @@ model_list = [
     # ["Quaxly_brain_v3a", [5], 912, 6, 3, "brain"], #dgx2
     # ["Quaxly_brain_v3a", [5], 912, 6, 4, "brain"], # over
     # ["Quaxly_brain_v3a", [5], 912, 6, 5, "brain"], # over
-    ["Quaxly_task1_v4", [7], 912, 6, 0, "task1"], #dgx2
-    ["Quaxly_task1_v4", [7], 912, 6, 1, "task1"], #dgx2
+    ["Quaxly_task1_v4", [7], 912, 6, 0, "task1"], #dgx2 runing
+    ["Quaxly_task1_v4", [7], 912, 6, 1, "task1"], #dgx2 runing
     ["Quaxly_task1_v4", [3], 912, 6, 2, "task1"], #dgx1
     ["Quaxly_task1_v4", [3], 912, 6, 3, "task1"], #dgx1
     ["Quaxly_task1_v4", [5], 912, 6, 5, "task1"], #dgx1
