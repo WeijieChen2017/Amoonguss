@@ -151,7 +151,7 @@ for idx_fold in [1,2,5,6]:
         ct = np.clip(ct, -1024, 3000)
 
 
-        masked_mae = np.sum(np.abs(ct - sct)) / np.sum(mask_data)
+        masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
         print("Masked MAE: ", masked_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_best/"+organ_case+"_sct.nii.gz"
@@ -194,7 +194,7 @@ for idx_fold in [1,2,5,6]:
         organ_case = mr_path.split("/")[-2]+"_"+mr_path.split("/")[-1]
         print("Loaded: ", mr_path, end="")
 
-        mr_data = mr_file.get_fdata()
+        mr_data = mr_file.get_fdata() / 3000
         ct_data = ct_file.get_fdata()
         mask_data = mask_file.get_fdata()
 
@@ -223,7 +223,7 @@ for idx_fold in [1,2,5,6]:
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
-        masked_mae = np.sum(np.abs(sct - ct)) / np.sum(mask_data)
+        masked_mae = np.sum(np.abs(sct * mask_data - ct * mask_data)) / np.sum(mask_data)
         print("Masked MAE: ", masked_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_last/"+organ_case+"_sct.nii.gz"
