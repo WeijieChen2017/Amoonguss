@@ -221,7 +221,7 @@ for idx_fold in [1,2,5,6]:
         sct = sct * mask_data
         ct = ct_data * mask_data
         sct = sct * 4024 - 1024
-        ct = ct * 4024 - 1024
+        # ct = ct * 4024 - 1024
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
