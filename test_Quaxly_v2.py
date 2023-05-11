@@ -1,5 +1,6 @@
 import os
 import time
+import glob
 import numpy as np
 import nibabel as nib
 
@@ -80,7 +81,8 @@ n_fold = train_dict["num_fold"]
 organ = train_dict["organ"]
 root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 
-for idx_fold in range(n_fold):
+# for idx_fold in range(n_fold):
+for idx_fold in [1,2,5,6]:
     curr_fold = idx_fold
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
@@ -160,7 +162,9 @@ for idx_fold in range(n_fold):
     print("Mean MAE: ", np.mean(mae_val))
 
     # test for the last model
-    last_model = root_dir + "model/fold_{:02d}_model_2500.pth".format(curr_fold)
+    # model_list = sorted(glob.glob(root_dir + "model/fold_{:02d}_model_*000.pth".format(curr_fold)))
+
+    last_model = root_dir + "model/fold_{:02d}_model_10000.pth".format(curr_fold)
     print("last_model: ", last_model)
     last_model = torch.load(last_model)
 
