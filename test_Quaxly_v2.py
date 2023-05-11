@@ -133,9 +133,9 @@ for idx_fold in [1,2,5,6]:
         roi_size = train_dict["input_size"], 
         sw_batch_size = 32, 
         predictor = model,
-        overlap=1/8, 
+        overlap=1/4, 
         mode="gaussian", 
-        sigma_scale=0.125, 
+        sigma_scale=1/4, 
         padding_mode="constant", 
         cval=0.0, 
         sw_device=device, 
@@ -151,8 +151,10 @@ for idx_fold in [1,2,5,6]:
         ct = np.clip(ct, -1024, 3000)
 
 
-        masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
-        print("Masked MAE: ", masked_mae)
+        # masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
+        # print("Masked MAE: ", masked_mae)
+        whole_mae = np.mean(np.abs(ct - sct))
+        print("Whole MAE: ", whole_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_best/"+organ_case+"_sct.nii.gz"
         nib.save(sct_file, sct_savename)
@@ -206,9 +208,9 @@ for idx_fold in [1,2,5,6]:
         roi_size = train_dict["input_size"], 
         sw_batch_size = 32, 
         predictor = model,
-        overlap=1/8, 
+        overlap=1/4, 
         mode="gaussian", 
-        sigma_scale=0.125, 
+        sigma_scale=1/4, 
         padding_mode="constant", 
         cval=0.0, 
         sw_device=device, 
@@ -223,8 +225,10 @@ for idx_fold in [1,2,5,6]:
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
-        masked_mae = np.sum(np.abs(sct * mask_data - ct * mask_data)) / np.sum(mask_data)
-        print("Masked MAE: ", masked_mae)
+        # masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
+        # print("Masked MAE: ", masked_mae)
+        whole_mae = np.mean(np.abs(ct - sct))
+        print("Whole MAE: ", whole_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_last/"+organ_case+"_sct.nii.gz"
         nib.save(sct_file, sct_savename)
