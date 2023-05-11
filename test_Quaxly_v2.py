@@ -145,8 +145,8 @@ for idx_fold in [1,2,5,6]:
         sct = np.squeeze(sct.cpu().detach().numpy()) # 0->1
         sct = sct * mask_data # 0->1
         sct = sct * 4024 - 1024 # -1024->3000
-        ct = (ct + 1024)/4024 # 0->1
-        ct = ct_data * mask_data
+        ct = (ct_data + 1024)/4024 # 0->1
+        ct = ct * mask_data
         ct = ct * 4024 - 1024 # -1024 -> 3000
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
@@ -221,10 +221,9 @@ for idx_fold in [1,2,5,6]:
         sct = np.squeeze(sct.cpu().detach().numpy()) # 0->1
         sct = sct * mask_data # 0->1
         sct = sct * 4024 - 1024 # -1024->3000
-        ct = (ct + 1024)/4024 # 0->1
-        ct = ct_data * mask_data
+        ct = (ct_data + 1024)/4024 # 0->1
+        ct = ct * mask_data
         ct = ct * 4024 - 1024 # -1024 -> 3000
-        # ct = ct * 4024 - 1024
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
