@@ -1,3 +1,8 @@
+# brain Maximum size: [280 284 262]
+# brainBrain Minimum size: [173. 224. 164.]
+# pelvis Maximum size: [586 410 153]
+# pelvisBrain Minimum size: [390. 248.  84.]
+
 import os
 import time
 import numpy as np
@@ -42,18 +47,19 @@ train_dict["optimizer"] = "AdamW"
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["input_size"] = (64, 64, 64)
 
-train_dict["GROWTH_epochs"] = [
-    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 25, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 7e-4, "loss": "l2",},
-    {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 75, "batch" : 16, "lr": 5e-4, "loss": "l1",},
-    {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 3e-4, "loss": "l1",},
-    {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
-]
+# train_dict["GROWTH_epochs"] = [
+#     {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 25, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+#     {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 7e-4, "loss": "l2",},
+#     {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 75, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+#     {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 3e-4, "loss": "l1",},
+#     {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
+# ]
 
 # train_dict["train_epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
-train_dict["train_epochs"] = 10500
+train_dict["train_epochs"] = 12000
 train_dict["eval_per_epochs"] = 100
-train_dict["save_per_epochs"] = 1000
+train_dict["save_per_epochs"] = 2000
+train_dict["sample_per_epochs"] = 1000
 train_dict["continue_training_epoch"] = 0
 # train_dict["batch"] = train_dict["GROWTH_epochs"][3]["batch"]
 # train_dict["start_batch"] = 16
@@ -248,22 +254,21 @@ val_transforms = Compose(
 
 data_dir = "./data_dir/Task1/"
 curr_fold = train_dict["current_fold"]
+organ = train_dict["organ"]
 # data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else data_dir+"pelvis.json"
 # print("data_json: ", data_json)
 # curr_fold = train_dict["current_fold"]
 # if train_dict["current_fold"] == 0:
 #     create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
 if train_dict["current_fold"] == 0:
-    data_json = data_dir+"brain.json"
+    data_json = data_dir+organ+".json"
     print("data_json: ", data_json)
     create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
-
-
 
 # n_stage = len(train_dict["GROWTH_epochs"])
 n_fold = train_dict["num_fold"]
 curr_fold = train_dict["current_fold"]
-organ = train_dict["organ"]
+
 
 split_json = root_dir + f"fold_{curr_fold + 1}.json"
 # with open(data_json, "r") as f:
@@ -447,6 +452,8 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         torch.save(scheduler.state_dict(), train_dict["save_folder"]+"model/fold_{:02d}_scheduler_{:04d}.pth".format(curr_fold, idx_epoch+1))
         print("Model saved at epoch {:03d}".format(idx_epoch+1))
 
+    # save the sample every train_dict["save_per_epochs"] epochs
+    if (idx_epoch+1) % train_dict["save_per_epochs"] == 0:
         mr_cache = mr.detach().cpu().numpy()
         ct_cache = ct.detach().cpu().numpy()
         sct_cache = sct.detach().cpu().numpy()
