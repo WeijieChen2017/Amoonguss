@@ -143,24 +143,24 @@ for idx_fold in [1,2,5,6]:
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy())
+        sct = sct * 4024 - 1024
         sct = sct * mask_data
         ct = ct_data * mask_data
-        sct = sct * 4024 - 1024
         # ct = ct * 4024 - 1024
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
 
-        # masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
-        # print("Masked MAE: ", masked_mae)
-        whole_mae = np.mean(np.abs(ct - sct))
-        print("Whole MAE: ", whole_mae)
+        masked_mae = np.sum(np.abs(ct - sct)) / np.sum(mask_data)
+        print("Masked MAE: ", masked_mae)
+        # whole_mae = np.mean(np.abs(ct - sct))
+        # print("Whole MAE: ", whole_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_best/"+organ_case+"_sct.nii.gz"
         nib.save(sct_file, sct_savename)
         print("Saved: ", sct_savename)
-        np.save(train_dict["save_folder"]+"eval_best/"+organ_case+"_mae.npy", whole_mae)
-        mae_val[idx_case] = whole_mae
+        np.save(train_dict["save_folder"]+"eval_best/"+organ_case+"_mae.npy", masked_mae)
+        mae_val[idx_case] = masked_mae
     print("Mean MAE: ", np.mean(mae_val))
 
     # test for the last model
@@ -218,23 +218,23 @@ for idx_fold in [1,2,5,6]:
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy())
+        sct = sct * 4024 - 1024
         sct = sct * mask_data
         ct = ct_data * mask_data
-        sct = sct * 4024 - 1024
         # ct = ct * 4024 - 1024
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
 
-        # masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
-        # print("Masked MAE: ", masked_mae)
-        whole_mae = np.mean(np.abs(ct - sct))
-        print("Whole MAE: ", whole_mae)
+        masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
+        print("Masked MAE: ", masked_mae)
+        # whole_mae = np.mean(np.abs(ct - sct))
+        # print("Whole MAE: ", whole_mae)
         sct_file = nib.Nifti1Image(sct, ct_file.affine, ct_file.header)
         sct_savename = train_dict["save_folder"]+"eval_last/"+organ_case+"_sct.nii.gz"
         nib.save(sct_file, sct_savename)
         print("Saved: ", sct_savename)
-        np.save(train_dict["save_folder"]+"eval_last/"+organ_case+"_mae.npy", whole_mae)
-        mae_val[idx_case] = whole_mae
+        np.save(train_dict["save_folder"]+"eval_last/"+organ_case+"_mae.npy", masked_mae)
+        mae_val[idx_case] = masked_mae
 
     print("Mean MAE: ", np.mean(mae_val))
 
