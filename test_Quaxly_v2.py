@@ -168,7 +168,7 @@ for idx_fold in [2,3]:
     # test for the last model
     # model_list = sorted(glob.glob(root_dir + "model/fold_{:02d}_model_*000.pth".format(curr_fold)))
 
-    last_model = root_dir + "model/fold_{:02d}_model_4000.pth".format(curr_fold)
+    last_model = root_dir + "model/fold_{:02d}_model_10000.pth".format(curr_fold)
     print("last_model: ", last_model)
     last_model = torch.load(last_model)
 
