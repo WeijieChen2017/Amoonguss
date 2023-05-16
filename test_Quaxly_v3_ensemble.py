@@ -88,6 +88,7 @@ for idx_fold in range(n_fold):
     with open(split_json, "r") as f:
         datasets = json.load(f)
         val_files = datasets["validation"]
+    n_val_files = len(val_files)
 
     for idx_case, val_case in enumerate(val_files):
         print("[{:03d}]/[{:03d} of {:03d}] Processing: ".format(idx_case+1, n_val_files, idx_fold), end="<--->")
