@@ -116,7 +116,7 @@ for idx_fold in range(n_fold):
         ct = np.clip(ct, -1024, 3000)
 
         for idx_model in range(n_fold):
-            best_model = root_dir + "model/fold_{:02d}_model_best.pth".format(curr_fold)
+            best_model = root_dir + "model/fold_{:02d}_model_10000.pth".format(curr_fold)
             # print("best_model: ", best_model)
             best_model = torch.load(best_model)
 
@@ -160,13 +160,13 @@ for idx_fold in range(n_fold):
         print("Masked MAE: ", masked_mae)
         
         sct_file = nib.Nifti1Image(sct_en, ct_file.affine, ct_file.header)
-        sct_savename = train_dict["save_folder"]+"ensemble_best/"+organ_case+"_sct.nii.gz"
+        sct_savename = train_dict["save_folder"]+"ensemble_last/"+organ_case+"_sct.nii.gz"
         nib.save(sct_file, sct_savename)
         print("Saved: ", sct_savename)
 
         std_file = nib.Nifti1Image(std_en, ct_file.affine, ct_file.header)
-        std_savename = train_dict["save_folder"]+"ensemble_best/"+organ_case+"_std.nii.gz"
+        std_savename = train_dict["save_folder"]+"ensemble_last/"+organ_case+"_std.nii.gz"
         nib.save(std_file, std_savename)
         print("Saved: ", std_savename)
         
-        np.save(train_dict["save_folder"]+"ensemble_best/"+organ_case+"_mae.npy", masked_mae)
+        np.save(train_dict["save_folder"]+"ensemble_last/"+organ_case+"_mae.npy", masked_mae)
