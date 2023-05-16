@@ -6,7 +6,7 @@ import os
 # the predicted sct is in ./project_dir/Quaxly_brain_v3a/ensemble_last/brain_1BA001_sct.nii.gz
 
 sct_file_list = sorted(glob.glob("./project_dir/Quaxly_brain_v3a/ensemble_last/*_sct.nii.gz"))
-for idx_sct, sct_path in sct_file_list:
+for sct_path in sct_file_list:
     organ = sct_path.split("/")[-1].split("_")[0]
     case_id = sct_path.split("/")[-1].split("_")[1]
     # ct_path = "./data_dir/Task_1/"+organ+"/"+case_id+"/ct.nii.gz"
