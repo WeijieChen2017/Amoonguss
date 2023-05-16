@@ -26,7 +26,7 @@ def build_tree(folder, data):
 
 
 # Replace 'your_folder_path' with the path to your folder
-your_folder_path = './data_dir/Task1/'
+your_folder_path = './data_dir/Task1/brain/'
 
 data = {
     "brain": {"MR": [], 
