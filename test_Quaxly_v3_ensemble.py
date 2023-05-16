@@ -60,7 +60,7 @@ unet_dict["num_res_units"] = 4
 
 train_dict["model_para"] = unet_dict
 
-for path in [train_dict["save_folder"]+"eval_best/", train_dict["save_folder"]+"eval_last/"]:
+for path in [train_dict["save_folder"]+"ensemble_best/", train_dict["save_folder"]+"ensemble_last/"]:
     if not os.path.exists(path):
         os.mkdir(path)
 
