@@ -186,7 +186,7 @@ train_transforms = Compose(
         # ),
         RandSpatialCropSamplesd(
             keys=["MR", "CT", "v3a_last"],
-            num_samples = 4, 
+            num_samples = 2, 
             roi_size=train_dict["input_size"], 
             random_size=False,
         ),
@@ -374,6 +374,9 @@ criterion = SmoothL1Loss()
 best_val_loss = 1000
 best_epoch = 0
 model.to(device)
+
+# I need to check the cuda device info
+print("cuda device info: ", torch.cuda.get_device_name(0), torch.cuda.get_device_properties(0))
 
 for idx_epoch_new in range(train_dict["train_epochs"]):
     idx_epoch = idx_epoch_new + train_dict["continue_training_epoch"]
