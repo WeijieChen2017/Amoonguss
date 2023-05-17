@@ -401,7 +401,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         print(" ===> Train:Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
             
         optimizer.zero_grad()
-        input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1)
+        input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1).float().to(device)
         sct, ds_1, ds_2, ds_3 = model(input_mr_v3a_last, is_deep_supervision=True)
         loss_out = criterion(ct, sct)
         loss_ds_1 = criterion(ct, ds_1)
@@ -433,7 +433,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
             # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
             print(" ===> Validation: Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
-            input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1)
+            input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1).float().to(device)
 
             with torch.no_grad():
                 sct = sliding_window_inference(
