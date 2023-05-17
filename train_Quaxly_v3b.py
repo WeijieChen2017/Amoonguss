@@ -125,7 +125,7 @@ from monai.transforms import (
 from util import (
     CustomNormalize,
     AddRicianNoise,
-    create_nfold_json,
+    create_nfold_json_v3b,
 )
 
 from monai.config import print_config
@@ -279,7 +279,7 @@ organ = train_dict["organ"]
 if train_dict["current_fold"] == 0:
     data_json = data_dir+"brain_v3a.json"
     print("data_json: ", data_json)
-    create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
+    create_nfold_json_v3b(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
 
 # n_stage = len(train_dict["GROWTH_epochs"])
 n_fold = train_dict["num_fold"]
