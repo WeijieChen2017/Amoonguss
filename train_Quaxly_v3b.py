@@ -373,7 +373,7 @@ criterion = SmoothL1Loss()
 
 best_val_loss = 1000
 best_epoch = 0
-model.to(device)
+model.cuda()
 
 # I need to check the cuda device info
 print("cuda device info: ", torch.cuda.get_device_name(0), torch.cuda.get_device_properties(0))
@@ -396,15 +396,15 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     print("Training: ", curr_iter, "iterations")
     case_loss = np.zeros((curr_iter, 1))
     for step, batch in enumerate(train_loader):
-        mr, ct, v3a_last = (batch["MR"].float().to(device),
-                            batch["CT"].float().to(device),
-                            batch["v3a_last"].float().to(device))
+        mr, ct, v3a_last = (batch["MR"].float().cuda(),
+                            batch["CT"].float().cuda(),
+                            batch["v3a_last"].float().cuda())
         # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
         # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
         print(" ===> Train:Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
             
         optimizer.zero_grad()
-        input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1).float().to(device)
+        input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1).float().cuda()
         sct, ds_1, ds_2, ds_3 = model(input_mr_v3a_last, is_deep_supervision=True)
         loss_out = criterion(ct, sct)
         loss_ds_1 = criterion(ct, ds_1)
@@ -430,13 +430,13 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         print("Validation: ", curr_iter, "iterations")
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
-            mr, ct, v3a_last = (batch["MR"].float().to(device),
-                                batch["CT"].float().to(device),
-                                batch["v3a_last"].float().to(device))
+            mr, ct, v3a_last = (batch["MR"].float().cuda(),
+                                batch["CT"].float().cuda(),
+                                batch["v3a_last"].float().cuda())
             # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
             # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
             print(" ===> Validation: Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
-            input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1).float().to(device)
+            input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1).float().cuda()
 
             with torch.no_grad():
                 sct = sliding_window_inference(
