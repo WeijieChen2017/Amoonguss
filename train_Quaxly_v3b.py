@@ -276,7 +276,7 @@ organ = train_dict["organ"]
 # curr_fold = train_dict["current_fold"]
 # if train_dict["current_fold"] == 0:
 #     create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
-if train_dict["current_fold"] == 0:
+if train_dict["current_fold"] == 0 and not os.path.exists(root_dir + f"fold_0.json"):
     data_json = data_dir+"brain_v3a.json"
     print("data_json: ", data_json)
     create_nfold_json_v3b(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
