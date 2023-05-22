@@ -8,10 +8,10 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v3b", [4], 912, 6, 0, "brain"], # dgx1
-    ["Quaxly_brain_v3b", [4], 912, 6, 1, "brain"], # dgx1
-    ["Quaxly_brain_v3b", [4], 912, 6, 2, "brain"], # dgx1
-    ["Quaxly_brain_v3b", [5], 912, 6, 3, "brain"], # dgx1
+    ["Quaxly_brain_v3b", [7], 912, 6, 0, "brain"], # dgx1
+    ["Quaxly_brain_v3b", [4], 912, 6, 1, "brain"], # ongoing
+    ["Quaxly_brain_v3b", [4], 912, 6, 2, "brain"], # ongoing
+    ["Quaxly_brain_v3b", [5], 912, 6, 3, "brain"], # ongoing
     ["Quaxly_brain_v3b", [5], 912, 6, 4, "brain"], # dgx1
     ["Quaxly_brain_v3b", [5], 912, 6, 5, "brain"], # dgx1
     # ["Quaxly_task1_v4", [7], 912, 6, 0, "task1"], #dgx2 runing
