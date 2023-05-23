@@ -323,6 +323,7 @@ class UNet_Quaxwell(nn.Module):
         x3 = self.down3(x2)
         x4 = self.down4(x3)
         xb = self.bottom(x4)
+        print("x1", x1.shape, "x2", x2.shape, "x3", x3.shape, "x4", x4.shape, "xb", xb.shape)
         x5 = self.up4(torch.add(x4, xb))
         x6 = self.up3(torch.add(x3, x5))
         x7 = self.up2(torch.add(x2, x6))

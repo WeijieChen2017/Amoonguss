@@ -405,7 +405,8 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             
         optimizer.zero_grad()
         input_mr_v3a_last = torch.concat((mr, v3a_last), dim=1).float().cuda()
-        sct, ds_1, ds_2, ds_3 = model(input_mr_v3a_last, is_deep_supervision=False)
+        # sct, ds_1, ds_2, ds_3 = model(input_mr_v3a_last, is_deep_supervision=False)
+        sct = model(input_mr_v3a_last, is_deep_supervision=False)
         loss_out = criterion(ct, sct)
         # loss_ds_1 = criterion(ct, ds_1)
         # loss_ds_2 = criterion(ct, ds_2)
