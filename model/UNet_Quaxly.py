@@ -272,7 +272,7 @@ class UNet_Quaxly(nn.Module):
     #     nn.init.zeros_(self.up2)
     #     nn.init.zeros_(self.up1)
 
-    def initialize_weights(self, partial_init=self.partial_init, method="he", negative_slope=0.25):
+    def initialize_weights(self, partial_init=False, method="he", negative_slope=0.25):
         for name, param in self.named_parameters():
             if "conv.weight" in name:
                 if partial_init:
