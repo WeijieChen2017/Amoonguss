@@ -140,7 +140,7 @@ for idx_fold in [1,2,3]:
 
         sct = sliding_window_inference(
         inputs = input_mr_v3a_last, 
-        roi_size = train_dict["input_size"], 
+        roi_size = train_dict["input_size"][0], 
         sw_batch_size = 32, 
         predictor = model,
         overlap=1/4, 
@@ -150,7 +150,7 @@ for idx_fold in [1,2,3]:
         cval=0.0, 
         sw_device=device, 
         device=device,
-        is_deep_supervision = False,
+        # is_deep_supervision = False,
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy()) # 0->1
@@ -223,7 +223,7 @@ for idx_fold in [1,2,3]:
 
         sct = sliding_window_inference(
         inputs = input_mr_v3a_last, 
-        roi_size = train_dict["input_size"], 
+        roi_size = train_dict["input_size"][0], 
         sw_batch_size = 32, 
         predictor = model,
         overlap=1/4, 
@@ -233,7 +233,7 @@ for idx_fold in [1,2,3]:
         cval=0.0, 
         sw_device=device, 
         device=device,
-        is_deep_supervision = False,
+        # is_deep_supervision = False,
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy()) # 0->1
