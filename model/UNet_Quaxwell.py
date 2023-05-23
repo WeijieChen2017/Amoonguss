@@ -212,12 +212,13 @@ class UNet_Quaxwell(nn.Module):
                 act=self.act, norm=self.norm, dropout=self.dropout,
                 bias=self.bias, adn_ordering=self.adn_ordering)
         self.bottom = nn.Sequential(
-                Convolution(3, self.channels[3], self.channels[4], strides=self.strides[2],
+                ResidualUnit(3, self.channels[3], self.channels[4], self.strides[2],
+                kernel_size=self.kernel_size, subunits=self.num_res_units,
+                act=self.act, norm=self.norm, dropout=self.dropout,
+                bias=self.bias, adn_ordering=self.adn_ordering),
+                Convolution(3, self.channels[4], self.channels[3], strides=self.strides[2],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
-                bias=self.bias, conv_only=False, is_transposed=False, adn_ordering=self.adn_ordering),
-                ResidualUnit(3, self.channels[4], self.channels[3], strides=1,
-                kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
-                dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering))
+                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering))
         self.up4 = nn.Sequential(
                 Convolution(3, self.channels[3], self.channels[2], strides=self.strides[2],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
