@@ -133,6 +133,7 @@ class UNet_Quaxly(nn.Module):
         # alter_block = 2,
         n_group = 1,
         partial_init = False,
+        is_deep_supervision = False,
     ) -> None:
 
         super().__init__()
@@ -168,6 +169,7 @@ class UNet_Quaxly(nn.Module):
         self.adn_ordering = adn_ordering
         self.n_group = n_group
         self.partial_init = partial_init
+        self.is_deep_supervision = is_deep_supervision
 
         # UNet( 
         # spatial_dims=unet_dict["spatial_dims"],
@@ -270,10 +272,10 @@ class UNet_Quaxly(nn.Module):
     #     nn.init.zeros_(self.up2)
     #     nn.init.zeros_(self.up1)
 
-    def initialize_weights(self, partial_init=False, method="he", negative_slope=0.25):
+    def initialize_weights(self, partial_init=self.partial_init, method="he", negative_slope=0.25):
         for name, param in self.named_parameters():
             if "conv.weight" in name:
-                if self.partial_init:
+                if partial_init:
                     partial_param = self.get_initialized_half_param(param, method, negative_slope)
                     param.data[partial_param.size(0):, partial_param.size(1):, ...] = partial_param
                 elif method == "he":
@@ -285,7 +287,7 @@ class UNet_Quaxly(nn.Module):
             elif "adn.A.weight" in name:
                 nn.init.constant_(param, 1)
             elif "residual.weight" in name:
-                if self.partial_init:
+                if partial_init:
                     partial_param = self.get_initialized_half_param(param, method, negative_slope)
                     param.data[partial_param.size(0):, partial_param.size(1):, ...] = partial_param
                 elif method == "he":
