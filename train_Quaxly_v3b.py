@@ -13,7 +13,7 @@ model_list = [
     ["Quaxly_brain_v3b", [4], 912, 6, 2, "brain"], # ongoing
     ["Quaxly_brain_v3b", [5], 912, 6, 3, "brain"], # ongoing
     ["Quaxly_brain_v3b", [4], 912, 6, 4, "brain"], # dgx1
-    ["Quaxly_brain_v3b", [5], 912, 6, 5, "brain"], # dgx1
+    ["Quaxly_brain_v3b", [6], 912, 6, 5, "brain"], # dgx1
     # ["Quaxly_task1_v4", [7], 912, 6, 0, "task1"], #dgx2 runing
     # ["Quaxly_task1_v4", [7], 912, 6, 1, "task1"], #dgx2 runing
     # ["Quaxly_task1_v4", [3], 912, 6, 2, "task1"], #dgx1
