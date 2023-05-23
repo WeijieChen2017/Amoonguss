@@ -132,6 +132,8 @@ for idx_fold in [1,2,3]:
 
         mr_data = mr_data / 3000
         v3a_last_data = (v3a_last_data + 1024) / 4024
+        mr_data = np.expand_dims(mr_data, (0,1))
+        v3a_last_data = np.expand_dims(v3a_last_data, (0,1))
         mr_data = torch.from_numpy(mr_data).float()
         v3a_last_data = torch.from_numpy(v3a_last_data).float()
         input_mr_v3a_last = torch.concat((mr_data, v3a_last_data), dim=1).to(device)
@@ -217,6 +219,8 @@ for idx_fold in [1,2,3]:
 
         # input_data = np.expand_dims(mr_data, (0,1))
         # input_data = torch.from_numpy(input_data).float().to(device)
+        mr_data = np.expand_dims(mr_data, (0,1))
+        v3a_last_data = np.expand_dims(v3a_last_data, (0,1))
         mr_data = torch.from_numpy(mr_data).float()
         v3a_last_data = torch.from_numpy(v3a_last_data).float()
         input_mr_v3a_last = torch.concat((mr_data, v3a_last_data), dim=1).float().to(device)
