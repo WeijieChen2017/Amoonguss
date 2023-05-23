@@ -320,10 +320,10 @@ class UNet_Quaxwell(nn.Module):
         x3 = self.down3(x2)
         x4 = self.down4(x3)
         xb = self.bottom(x4)
-        x5 = self.up4(torch.add([x4, xb], dim=1))
-        x6 = self.up3(torch.add([x3, x5], dim=1))
-        x7 = self.up2(torch.add([x2, x6], dim=1))
-        x8 = self.up1(torch.add([x1, x7], dim=1))
+        x5 = self.up4(torch.add(x4, xb, dim=1))
+        x6 = self.up3(torch.add(x3, x5, dim=1))
+        x7 = self.up2(torch.add(x2, x6, dim=1))
+        x8 = self.up1(torch.add(x1, x7, dim=1))
 
         if is_deep_supervision:
             ds_1 = self.ds_out_1(torch.add([x1, x7], dim=1))
