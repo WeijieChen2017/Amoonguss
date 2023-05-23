@@ -214,7 +214,7 @@ class UNet_Quaxwell(nn.Module):
         self.bottom = nn.Sequential(
                 Convolution(3, self.channels[3], self.channels[4], strides=self.strides[2],
                 kernel_size=self.up_kernel_size, act=self.act, norm=self.norm, dropout=self.dropout, 
-                bias=self.bias, conv_only=False, is_transposed=True, adn_ordering=self.adn_ordering),
+                bias=self.bias, conv_only=False, is_transposed=False, adn_ordering=self.adn_ordering),
                 ResidualUnit(3, self.channels[4], self.channels[3], strides=1,
                 kernel_size=self.kernel_size, subunits=1, act=self.act, norm=self.norm,
                 dropout=self.dropout, bias=self.bias, last_conv_only=False, adn_ordering=self.adn_ordering))
@@ -323,7 +323,7 @@ class UNet_Quaxwell(nn.Module):
         x3 = self.down3(x2)
         x4 = self.down4(x3)
         xb = self.bottom(x4)
-        print("x1", x1.shape, "x2", x2.shape, "x3", x3.shape, "x4", x4.shape, "xb", xb.shape)
+        # print("x1", x1.shape, "x2", x2.shape, "x3", x3.shape, "x4", x4.shape, "xb", xb.shape)
         x5 = self.up4(torch.add(x4, xb))
         x6 = self.up3(torch.add(x3, x5))
         x7 = self.up2(torch.add(x2, x6))
