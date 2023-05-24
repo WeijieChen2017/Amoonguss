@@ -10,7 +10,7 @@ import numpy as np
 model_list = [
     ["Quaxly_brain_v3b", [7], 912, 6, 0, "brain"], # ongoing
     ["Quaxly_brain_v3b", [4], 912, 6, 1, "brain"], # ongoing
-    ["Quaxly_brain_v3b", [4], 912, 6, 2, "brain"], # ongoing
+    ["Quaxly_brain_v3b", [4], 912, 6, 2, "brain"], # ongoing best at 3500
     ["Quaxly_brain_v3b", [5], 912, 6, 3, "brain"], # ongoing
     ["Quaxly_brain_v3b", [4], 912, 6, 4, "brain"], # ongoing
     ["Quaxly_brain_v3b", [3], 912, 6, 5, "brain"], # dgx1
