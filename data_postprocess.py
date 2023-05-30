@@ -5,7 +5,7 @@ import os
 # the ct file is in ./data_dir/Task1/brain/1BA001/ct.nii.gz
 # the predicted sct is in ./project_dir/Quaxly_brain_v3a/ensemble_last/brain_1BA001_sct.nii.gz
 
-sct_file_list = sorted(glob.glob("./project_dir/Quaxly_brain_v3b/ensemble_best/*_sct.nii.gz"))
+sct_file_list = sorted(glob.glob("./project_dir/Quaxly_brain_v3b/eval_best/*_sct.nii.gz"))
 for sct_path in sct_file_list:
     organ = sct_path.split("/")[-1].split("_")[0]
     case_id = sct_path.split("/")[-1].split("_")[1]
@@ -18,7 +18,7 @@ for sct_path in sct_file_list:
     os.system("cp "+std_path+" "+std_dst)
     print("Copied: ", std_path, " to ", std_dst)
 
-sct_file_list = sorted(glob.glob("./project_dir/Quaxly_brain_v3b/ensemble_last/*_sct.nii.gz"))
+sct_file_list = sorted(glob.glob("./project_dir/Quaxly_brain_v3b/eval_last/*_sct.nii.gz"))
 for sct_path in sct_file_list:
     organ = sct_path.split("/")[-1].split("_")[0]
     case_id = sct_path.split("/")[-1].split("_")[1]
