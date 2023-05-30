@@ -6,7 +6,7 @@ import os
 import time
 
 n_fold = 6
-folder = "./project_dir/Quaxly_brain_v3b/"
+folder = "./project_dir/Quaxly_brain_v3a/"
 
 # fold_hub = {}
 # for idx_fold in range(n_fold):
