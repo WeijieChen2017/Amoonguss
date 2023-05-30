@@ -5,7 +5,7 @@ import numpy as np
 import nibabel as nib
 
 model_list = [
-    ["Quaxwell_brain_v3b", [4], 912, 6, 0],
+    ["Quaxwell_brain_v3b", [7], 912, 6, 0],
     # ["Quaxly_pelvis_v2", [1], 912, 6, 0],
 ]
 
