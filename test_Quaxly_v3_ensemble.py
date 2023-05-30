@@ -116,7 +116,8 @@ for idx_fold in range(n_fold):
         ct = np.clip(ct, -1024, 3000)
 
         for idx_model in range(n_fold):
-            best_model = root_dir + "model/fold_{:02d}_model_10000.pth".format(curr_fold)
+            last_model_list = sorted(glob.glob(root_dir + "model/fold_{:02d}_model_*000.pth".format(curr_fold)))
+            last_model = last_model_list[-1]
             # print("best_model: ", best_model)
             best_model = torch.load(best_model)
 
