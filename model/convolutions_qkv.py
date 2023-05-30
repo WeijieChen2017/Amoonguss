@@ -118,6 +118,7 @@ class Convolution(nn.Sequential):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.is_transposed = is_transposed
+        self.conv_only = conv_only
         if padding is None:
             padding = same_padding(kernel_size, dilation)
         conv_type = Conv[Conv.CONVTRANS if is_transposed else Conv.CONV, self.spatial_dims]
@@ -196,22 +197,21 @@ class Convolution(nn.Sequential):
         self.add_module("conv_v", conv_v)
         self.add_module("softmax", nn.PReLU())
 
-        if conv_only:
-            return
-        if act is None and norm is None and dropout is None:
-            return
-        self.add_module(
-            "adn",
-            ADN(
-                ordering=adn_ordering,
-                in_channels=out_channels,
-                act=act,
-                norm=norm,
-                norm_dim=self.spatial_dims,
-                dropout=dropout,
-                dropout_dim=dropout_dim,
-            ),
-        )
+        # if conv_only:
+            # return
+        if not (act is None and norm is None and dropout is None):
+            self.add_module(
+                "adn",
+                ADN(
+                    ordering=adn_ordering,
+                    in_channels=out_channels,
+                    act=act,
+                    norm=norm,
+                    norm_dim=self.spatial_dims,
+                    dropout=dropout,
+                    dropout_dim=dropout_dim,
+                ),
+            )
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -226,7 +226,10 @@ class Convolution(nn.Sequential):
         v = self.conv_v(x)
         qk = self.softmax(torch.mul(q, k) / 3)
         qkv = torch.mul(qk, v)
-        return self.adn(qkv)
+        if self.conv_only:
+            return qkv
+        else:
+            return self.adn(qkv)
 
 
 
