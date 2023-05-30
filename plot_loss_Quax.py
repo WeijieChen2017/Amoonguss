@@ -38,7 +38,8 @@ folder = "./project_dir/Quaxly_brain_v3b/"
 # savename = folder + "overall_loss_{:02d}_{}.npy".format(n_fold, timestamp)
 # np.save(savename, fold_hub)
 
-savename = folder + "overall_loss_06_20230530_014157.npy"
+# savename = folder + "overall_loss_06_20230530_014157.npy"
+savename = folder + "overall_loss_06_20230530_012231.npy"
 fold_hub = np.load(savename, allow_pickle=True).item()
 print(fold_hub.keys())
 
