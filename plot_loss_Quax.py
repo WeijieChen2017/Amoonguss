@@ -42,6 +42,19 @@ savename = folder + "overall_loss_06_20230530_012231.npy"
 fold_hub = np.load(savename, allow_pickle=True).item()
 print(fold_hub.keys())
 
+legend_list = []
+fold_list = fold_hub.keys()
+plt.figure(figsize=(12,6), dpi=300)
+for idx_fold in fold_list:
+    legend_list.append("Fold{:02d}_train".format(idx_fold))
+    xmesh = np.asarray(range(1, len(fold_hub[idx_fold]["train"])+1))
+    plt.plot(xmesh, fold_hub[idx_fold]["train"])
+plt.xlabel("epoch")
+plt.ylabel("MAE (HU)")
+plt.yscale("log")
+plt.legend(legend_list)
+plt.savefig(folder+"overall_loss_train.png")
+
 # # npy_list = sorted(glob.glob(folder+"loss/epoch_loss_*.npy"))
 # for npy_path in npy_list:
 #     print(npy_path)
