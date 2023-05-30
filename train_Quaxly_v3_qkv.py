@@ -3,7 +3,7 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v3qkv", [4], 912, 6, 0],
+    ["Quaxly_brain_v3qkv", [5], 912, 6, 0],
     # ["Quaxly_brain_v3a", [3], 912, 6, 1],
     # ["Quaxly_brain_v3a", [5], 912, 6, 2], # dgx2
     # ["Quaxly_brain_v3a", [5], 912, 6, 3], # dgx2

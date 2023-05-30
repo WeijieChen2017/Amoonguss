@@ -24,10 +24,10 @@ worksheet_mae.write('A1', 'Case ID', bold)
 worksheet_mae.write('B1', 'v3a_best', bold)
 worksheet_mae.write('C1', 'v3a_last', bold)
 worksheet_mae.write('D1', 'v3b_best', bold)
-worksheet_mae.write('F1', 'v3b_last', bold)
-worksheet_mae.write('G1', 'v3bq_best', bold)
-worksheet_mae.write('H1', 'v3bq_last', bold)
-worksheet_mae.write('I1', 'n_fold', bold)
+worksheet_mae.write('E1', 'v3b_last', bold)
+worksheet_mae.write('F1', 'v3bq_best', bold)
+worksheet_mae.write('G1', 'v3bq_last', bold)
+worksheet_mae.write('H1', 'n_fold', bold)
 
 
 def cal_mae_with_idx(sct_path, col_idx, worksheet_mae, idx_case, ct, mask_data):
