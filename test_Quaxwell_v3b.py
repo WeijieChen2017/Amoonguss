@@ -184,7 +184,7 @@ for idx_fold in [2,3]:
     print("last_model: ", last_model)
     last_model = torch.load(last_model)
 
-    model = UNet_Quaxly( 
+    model = UNet_Quaxwell( 
         spatial_dims=unet_dict["spatial_dims"],
         in_channels=unet_dict["in_channels"],
         out_channels=unet_dict["out_channels"],
