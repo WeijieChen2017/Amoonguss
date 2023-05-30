@@ -32,10 +32,16 @@ worksheet_mae.write('H1', 'n_fold', bold)
 
 def cal_mae_with_idx(sct_path, col_idx, worksheet_mae, idx_case, ct, mask_data):
     if os.path.exists(sct_path):
-        sct_data = nib.load(sct_path).get_fdata()
+        sct_file = nib.load(sct_path)
+        sct_data = sct_file.get_fdata()
         sct = np.clip(sct_data, -1024, 3000)
         masked_mae = np.sum(np.abs(ct * mask_data - sct * mask_data)) / np.sum(mask_data)
         worksheet_mae.write(idx_case+1, col_idx, masked_mae)
+        diff_sct = np.abs(ct - sct) * mask_data
+        diff_name = sct_path.replace(".nii.gz", "_diff.nii.gz")
+        diff_file = nib.Nifti1Image(diff_sct, sct_file.affine, sct_file.header)
+        nib.save(diff_file, diff_name)
+        print("Saved", diff_name)
 
 
 for idx_case in range(n_case_id):
