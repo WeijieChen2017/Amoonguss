@@ -3,20 +3,30 @@ import matplotlib.pyplot as plt
 import glob
 import copy
 import os
+import time
 
 n_fold = 6
 folder = "./project_dir/Quaxly_brain_v3a/"
 
-plot_data = []
 fold_hub = []
 for idx_fold in range(n_fold):
+    fold_hub[idx_fold] = {"train":[], "val":[]}
     train_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_train_*.npy".format(idx_fold)))
     val_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_val_*.npy".format(idx_fold)))
     for npy_path in train_npy_list:
         print(npy_path)
         data = np.load(npy_path)
-        print(data)
-        print(data.shape)
+        MAE_HU = np.mean(data) * 4024 - 1024
+        fold_hub[idx_fold]["train"].append(MAE_HU)
+    for npy_path in val_npy_list:
+        print(npy_path)
+        data = np.load(npy_path)
+        MAE_HU = np.mean(data) * 4024 - 1024
+        fold_hub[idx_fold]["val"].append(MAE_HU)
+
+timestamp = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+savename = folder + "overall_loss_{:02d}_{}.jpg".format(n_fold, timestamp)
+
     
 
 # # npy_list = sorted(glob.glob(folder+"loss/epoch_loss_*.npy"))
