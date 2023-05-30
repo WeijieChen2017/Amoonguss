@@ -26,7 +26,7 @@ for idx_fold in range(n_fold):
         # print(npy_path)
         data = np.load(npy_path)
         # fold_03_val_9900.npy
-        epoch = int(os.path.basename(npy_path).split("_")[3])
+        epoch = int(os.path.basename(npy_path).split("_")[3].split(".")[0])
         min_epoch = epoch
         if not epoch in val_epoch:
             val_epoch.append(epoch)
