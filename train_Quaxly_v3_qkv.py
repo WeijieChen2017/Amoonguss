@@ -3,7 +3,7 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v3qkv", [5], 912, 6, 0],
+    ["Quaxly_brain_v3qkv", [7], 912, 6, 0],
     # ["Quaxly_brain_v3a", [3], 912, 6, 1],
     # ["Quaxly_brain_v3a", [5], 912, 6, 2], # dgx2
     # ["Quaxly_brain_v3a", [5], 912, 6, 3], # dgx2
@@ -248,7 +248,7 @@ data_dir = "./data_dir/Task1/"
 data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else data_dir+"pelvis.json"
 print("data_json: ", data_json)
 curr_fold = train_dict["current_fold"]
-if train_dict["current_fold"] == 0:
+if train_dict["current_fold"] == 0 and not os.path.exists(root_dir + f"fold_0.json"):
     create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
 
 # n_stage = len(train_dict["GROWTH_epochs"])
