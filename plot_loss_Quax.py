@@ -8,7 +8,7 @@ import time
 n_fold = 6
 folder = "./project_dir/Quaxly_brain_v3a/"
 
-fold_hub = []
+fold_hub = {}
 for idx_fold in range(n_fold):
     fold_hub[idx_fold] = {"train":[], "val":[]}
     train_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_train_*.npy".format(idx_fold)))
