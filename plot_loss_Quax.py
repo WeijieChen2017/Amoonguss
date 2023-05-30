@@ -30,7 +30,7 @@ folder = "./project_dir/Quaxly_brain_v3a/"
 #         if not epoch in fold_hub[idx_fold]["val_epoch"]:
 #             fold_hub[idx_fold]["val_epoch"].append(epoch)
 #         max_epoch = max(max_epoch, epoch)
-#         MAE_HU = np.mean(data) * 4024 - 1024
+#         MAE_HU = np.mean(data) * 4024
 #         fold_hub[idx_fold]["val"][epoch] = MAE_HU
 #     print("Fold {:02d}:".format(idx_fold), "Epoch_val:", max_epoch)
 
@@ -48,8 +48,8 @@ plt.figure(figsize=(12,6), dpi=300)
 for idx_fold in fold_list:
     legend_list.append("Fold{:02d}_train".format(idx_fold))
     xmesh = np.asarray(range(1, len(fold_hub[idx_fold]["train"])+1))
-    print(xmesh, fold_hub[idx_fold]["train"])
-    plt.plot(xmesh, fold_hub[idx_fold]["train"])
+    print(xmesh, fold_hub[idx_fold]["train"]+1024)
+    plt.plot(xmesh, fold_hub[idx_fold]["train"]+1024)
 plt.xlabel("epoch")
 plt.ylabel("MAE (HU)")
 plt.yscale("log")
