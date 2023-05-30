@@ -37,8 +37,8 @@ for idx_fold in range(n_fold):
 
 timestamp = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 savename = folder + "overall_loss_{:02d}_{}.jpg".format(n_fold, timestamp)
+np.save(savename, fold_hub)
 
-    
 
 # # npy_list = sorted(glob.glob(folder+"loss/epoch_loss_*.npy"))
 # for npy_path in npy_list:
