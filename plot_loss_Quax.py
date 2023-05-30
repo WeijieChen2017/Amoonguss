@@ -44,12 +44,12 @@ print(fold_hub.keys())
 
 legend_list = []
 fold_list = fold_hub.keys()
-plt.figure(figsize=(12,6), dpi=300)
+plt.figure(figsize=(18,6), dpi=300)
 for idx_fold in fold_list:
     legend_list.append("Fold{:02d}_train".format(idx_fold))
     xmesh = np.asarray(range(1, len(fold_hub[idx_fold]["train"])+1))
     data = np.asarray(fold_hub[idx_fold]["train"]) + 1024
-    plt.plot(xmesh, data)
+    plt.plot(xmesh, data, alpha=0.5)
 plt.xlabel("epoch")
 plt.ylabel("MAE (HU)")
 plt.yscale("log")
