@@ -39,7 +39,9 @@ def cal_mae_with_idx(sct_path, col_idx, worksheet_mae, idx_case, ct, mask_data):
 
 
 for idx_case in range(n_case_id):
+
     case_id = case_id_list[idx_case]
+    print(case_id)
     worksheet_mae.write(idx_case+1, 0, case_id)
 
     ct_data = nib.load("./data_dir/Task1/brain/"+case_id+"/ct.nii.gz").get_fdata()
