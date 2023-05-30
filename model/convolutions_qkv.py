@@ -126,7 +126,29 @@ class Convolution(nn.Sequential):
         if is_transposed:
             if output_padding is None:
                 output_padding = stride_minus_kernel_padding(1, strides)
-            conv = conv_type(
+            conv_q = conv_type(
+                in_channels,
+                out_channels,
+                kernel_size=kernel_size,
+                stride=strides,
+                padding=padding,
+                output_padding=output_padding,
+                groups=groups,
+                bias=bias,
+                dilation=dilation,
+            )
+            conv_k = conv_type(
+                in_channels,
+                out_channels,
+                kernel_size=kernel_size,
+                stride=strides,
+                padding=padding,
+                output_padding=output_padding,
+                groups=groups,
+                bias=bias,
+                dilation=dilation,
+            )
+            conv_v = conv_type(
                 in_channels,
                 out_channels,
                 kernel_size=kernel_size,
@@ -138,7 +160,27 @@ class Convolution(nn.Sequential):
                 dilation=dilation,
             )
         else:
-            conv = conv_type(
+            conv_q = conv_type(
+                in_channels,
+                out_channels,
+                kernel_size=kernel_size,
+                stride=strides,
+                padding=padding,
+                dilation=dilation,
+                groups=groups,
+                bias=bias,
+            )
+            conv_k = conv_type(
+                in_channels,
+                out_channels,
+                kernel_size=kernel_size,
+                stride=strides,
+                padding=padding,
+                dilation=dilation,
+                groups=groups,
+                bias=bias,
+            )
+            conv_v = conv_type(
                 in_channels,
                 out_channels,
                 kernel_size=kernel_size,
@@ -149,7 +191,10 @@ class Convolution(nn.Sequential):
                 bias=bias,
             )
 
-        self.add_module("conv", conv)
+        self.add_module("conv_q", conv_q)
+        self.add_module("conv_k", conv_k)
+        self.add_module("conv_v", conv_v)
+        self.add_module("softmax", nn.PReLU())
 
         if conv_only:
             return
@@ -167,6 +212,21 @@ class Convolution(nn.Sequential):
                 dropout_dim=dropout_dim,
             ),
         )
+    
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: tensor data to be transformed.
+
+        Returns:
+            output tensor.
+        """
+        q = self.conv_q(x)
+        k = self.conv_k(x)
+        v = self.conv_v(x)
+        qk = self.softmax(torch.mul(q, k) / 3)
+        qkv = torch.mul(qk, v)
+        return self.adn(qkv)
 
 
 
