@@ -9,7 +9,7 @@ folder_list = sorted(glob.glob(data_dir+"*/mr.nii.gz"))
 case_id_list = []
 for folder_path in folder_list:
     case_id = folder_path.split("/")[-2]
-    print(case_id)
+    # print(case_id)
     case_id_list.append(case_id)
 n_case_id = len(case_id_list)
 
