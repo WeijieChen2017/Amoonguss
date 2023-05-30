@@ -35,7 +35,7 @@ sct_file_list = sorted(glob.glob("./project_dir/Quaxwell_brain_v3b/eval_best/*_s
 for sct_path in sct_file_list:
     # organ = sct_path.split("/")[-1].split("_")[0]
     organ = "brain"
-    case_id = sct_path.split("/")[-1].split("_")[0]
+    case_id = sct_path.split("/")[-1].split("_")[1]
     # ct_path = "./data_dir/Task_1/"+organ+"/"+case_id+"/ct.nii.gz"
     sct_dst = "./data_dir/Task1/"+organ+"/"+case_id+"/sct_v3bq_best.nii.gz"
     std_dst = "./data_dir/Task1/"+organ+"/"+case_id+"/std_v3bq_best.nii.gz"
