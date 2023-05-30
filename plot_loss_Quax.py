@@ -48,6 +48,7 @@ plt.figure(figsize=(12,6), dpi=300)
 for idx_fold in fold_list:
     legend_list.append("Fold{:02d}_train".format(idx_fold))
     xmesh = np.asarray(range(1, len(fold_hub[idx_fold]["train"])+1))
+    print(xmesh, fold_hub[idx_fold]["train"])
     plt.plot(xmesh, fold_hub[idx_fold]["train"])
 plt.xlabel("epoch")
 plt.ylabel("MAE (HU)")
