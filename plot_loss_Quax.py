@@ -21,7 +21,7 @@ for idx_fold in range(n_fold):
         fold_hub[idx_fold]["train"].append(MAE_HU)
     print("Fold {:02d}:".format(idx_fold), "Epoch_train:", len(fold_hub[idx_fold]["train"]))
 
-    min_epoch = 0
+    max_epoch = 0
     for npy_path in val_npy_list:
         # print(npy_path)
         data = np.load(npy_path)
@@ -30,9 +30,10 @@ for idx_fold in range(n_fold):
         min_epoch = epoch
         if not epoch in val_epoch:
             val_epoch.append(epoch)
+        max_epoch = max(max_epoch, epoch)
         MAE_HU = np.mean(data) * 4024 - 1024
         fold_hub[idx_fold]["val"][epoch] = MAE_HU
-    print("Fold {:02d}:".format(idx_fold), "Epoch_val:", max(min_epoch))
+    print("Fold {:02d}:".format(idx_fold), "Epoch_val:", max_epoch)
 
 timestamp = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 savename = folder + "overall_loss_{:02d}_{}.jpg".format(n_fold, timestamp)
