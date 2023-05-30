@@ -1,7 +1,7 @@
 import glob
 import os
-import numpy as np
-import nibabel as nib
+# import numpy as np
+# import nibabel as nib
 
 data_dir = "./data_dir/Task1/brain/"
 folder_list = sorted(glob.glob(data_dir+"*/mr.nii.gz"))
