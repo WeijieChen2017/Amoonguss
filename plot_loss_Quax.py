@@ -14,15 +14,16 @@ for idx_fold in range(n_fold):
     train_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_train_*.npy".format(idx_fold)))
     val_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_val_*.npy".format(idx_fold)))
     for npy_path in train_npy_list:
-        print(npy_path)
+        # print(npy_path)
         data = np.load(npy_path)
         MAE_HU = np.mean(data) * 4024 - 1024
         fold_hub[idx_fold]["train"].append(MAE_HU)
     for npy_path in val_npy_list:
-        print(npy_path)
+        # print(npy_path)
         data = np.load(npy_path)
         MAE_HU = np.mean(data) * 4024 - 1024
         fold_hub[idx_fold]["val"].append(MAE_HU)
+    print("Fold {:02d}:".format(idx_fold), "Epoch_train:", len(fold_hub[idx_fold]["train"]), "Epoch_val:", len(fold_hub[idx_fold]["val"]))
 
 timestamp = time.strftime("%Y%m%d_%H%M%S", time.localtime())
 savename = folder + "overall_loss_{:02d}_{}.jpg".format(n_fold, timestamp)
