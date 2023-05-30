@@ -8,37 +8,39 @@ import time
 n_fold = 6
 folder = "./project_dir/Quaxly_brain_v3a/"
 
-fold_hub = {}
-val_epoch = []
-for idx_fold in range(n_fold):
-    fold_hub[idx_fold] = {"train":[], "val":{}}
-    train_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_train_*.npy".format(idx_fold)))
-    val_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_val_*.npy".format(idx_fold)))
-    for npy_path in train_npy_list:
-        # print(npy_path)
-        data = np.load(npy_path)
-        MAE_HU = np.mean(data) * 4024 - 1024
-        fold_hub[idx_fold]["train"].append(MAE_HU)
-    print("Fold {:02d}:".format(idx_fold), "Epoch_train:", len(fold_hub[idx_fold]["train"]))
+# fold_hub = {}
+# for idx_fold in range(n_fold):
+#     fold_hub[idx_fold] = {"train":[], "val":{}, "val_epoch":[]}
+#     train_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_train_*.npy".format(idx_fold)))
+#     val_npy_list = sorted(glob.glob(folder+"loss/fold_{:02d}_val_*.npy".format(idx_fold)))
+#     for npy_path in train_npy_list:
+#         # print(npy_path)
+#         data = np.load(npy_path)
+#         MAE_HU = np.mean(data) * 4024 - 1024
+#         fold_hub[idx_fold]["train"].append(MAE_HU)
+#     print("Fold {:02d}:".format(idx_fold), "Epoch_train:", len(fold_hub[idx_fold]["train"]))
 
-    max_epoch = 0
-    for npy_path in val_npy_list:
-        # print(npy_path)
-        data = np.load(npy_path)
-        # fold_03_val_9900.npy
-        epoch = int(os.path.basename(npy_path).split("_")[3].split(".")[0])
-        min_epoch = epoch
-        if not epoch in val_epoch:
-            val_epoch.append(epoch)
-        max_epoch = max(max_epoch, epoch)
-        MAE_HU = np.mean(data) * 4024 - 1024
-        fold_hub[idx_fold]["val"][epoch] = MAE_HU
-    print("Fold {:02d}:".format(idx_fold), "Epoch_val:", max_epoch)
+#     max_epoch = 0
+#     for npy_path in val_npy_list:
+#         # print(npy_path)
+#         data = np.load(npy_path)
+#         # fold_03_val_9900.npy
+#         epoch = int(os.path.basename(npy_path).split("_")[3].split(".")[0])
+#         min_epoch = epoch
+#         if not epoch in fold_hub[idx_fold]["val_epoch"]:
+#             fold_hub[idx_fold]["val_epoch"].append(epoch)
+#         max_epoch = max(max_epoch, epoch)
+#         MAE_HU = np.mean(data) * 4024 - 1024
+#         fold_hub[idx_fold]["val"][epoch] = MAE_HU
+#     print("Fold {:02d}:".format(idx_fold), "Epoch_val:", max_epoch)
 
-timestamp = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-savename = folder + "overall_loss_{:02d}_{}.npy".format(n_fold, timestamp)
-np.save(savename, fold_hub)
+# timestamp = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+# savename = folder + "overall_loss_{:02d}_{}.npy".format(n_fold, timestamp)
+# np.save(savename, fold_hub)
 
+savename = folder + "overall_loss_06_20230530_012231.npy"
+fold_hub = np.load(savename, allow_pickle=True).item()
+print(fold_hub.keys())
 
 # # npy_list = sorted(glob.glob(folder+"loss/epoch_loss_*.npy"))
 # for npy_path in npy_list:
