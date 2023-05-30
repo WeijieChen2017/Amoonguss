@@ -46,7 +46,7 @@ for idx_case in range(n_case_id):
 
     ct_data = nib.load("./data_dir/Task1/brain/"+case_id+"/ct.nii.gz").get_fdata()
     mask_data = nib.load("./data_dir/Task1/brain/"+case_id+"/mask.nii.gz").get_fdata()
-    ct = np.clip(ct, -1024, 3000)
+    ct = np.clip(ct_data, -1024, 3000)
 
     # v3a_best
     sct_path = "./data_dir/Task1/brain/"+case_id+"/sct_v3a_best.nii.gz"
