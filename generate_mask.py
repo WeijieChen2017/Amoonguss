@@ -11,8 +11,9 @@ import glob
 
 # search the MRI images
 
-data_folder = "./data_dir/Task1/brain/"
-mri_paths_list = sorted(glob.glob(data_folder+"*/mr.nii.gz"))
+data_folder_brain = "./data_dir/Task1/brain/"
+data_folder_pelvis = "./data_dir/Task1/pelvis/"
+mri_paths_list = sorted(glob.glob(data_folder_brain+"*/mr.nii.gz")) + sorted(glob.glob(data_folder_pelvis+"*/mr.nii.gz"))
 
 def generate_mask(mri_data, value_threshold, guassian_threshold, dilation_radius=3, blur_radius=2):
     # Load the MRI image 
