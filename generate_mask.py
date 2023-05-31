@@ -45,7 +45,11 @@ def generate_mask(mri_data, value_threshold, guassian_threshold, dilation_radius
             largest_label = np.argmax([np.sum(labeled_mask == j) for j in range(1, num_labels+1)]) + 1
             filled_mask[:,:,i] = (labeled_mask == largest_label)
 
-    return filled_mask
+    # Apply thresholding again with the original image to ensure that all regions in the mask are above the threshold in the original image
+    final_mask = np.where((mri_img > value_threshold) & (filled_mask == 1), 1, 0)
+
+
+    return final_mask
 
 for mri_path in mri_paths_list:
     print("mri_path: ", mri_path)
