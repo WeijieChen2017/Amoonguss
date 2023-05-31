@@ -48,7 +48,6 @@ def generate_mask(mri_data, value_threshold, guassian_threshold, dilation_radius
     # Apply thresholding again with the original image to ensure that all regions in the mask are above the threshold in the original image
     final_mask = np.where((mri_img > value_threshold) & (filled_mask == 1), 1, 0)
 
-
     return final_mask
 
 for mri_path in mri_paths_list:
@@ -57,10 +56,10 @@ for mri_path in mri_paths_list:
     mri_data = mri_file.get_fdata()
     mri_mask = generate_mask(
         mri_data=mri_data, 
-        value_threshold=50,
+        value_threshold=150,
         guassian_threshold=0.9,
     )
     mask_file = nib.Nifti1Image(mri_mask, mri_file.affine, mri_file.header)
-    mask_path = mri_path.replace("mr.nii.gz", "mask_mri_th50.nii.gz")
+    mask_path = mri_path.replace("mr.nii.gz", "mask_mri_th150.nii.gz")
     nib.save(mask_file, mask_path)
     print("mask_path: ", mask_path)
