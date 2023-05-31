@@ -57,7 +57,7 @@ for mri_path in mri_paths_list:
     mri_data = mri_file.get_fdata()
     mri_mask = generate_mask(
         mri_data=mri_data, 
-        value_threshold=150,
+        value_threshold=60,
         guassian_threshold=0.9,
     )
     mask_file = nib.Nifti1Image(mri_mask, mri_file.affine, mri_file.header)
