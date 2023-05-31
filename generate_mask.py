@@ -11,7 +11,7 @@ import glob
 data_folder = "./data_dir/Task1/brain/"
 mri_paths_list = sorted(glob.glob(data_folder+"*/mr.nii.gz"))
 
-def generate_mask(mri_data, threshold, smoothing_radius=3):
+def generate_mask(mri_data, threshold, smoothing_radius=5):
     # Load the MRI image 
     mri_img = mri_data
 
