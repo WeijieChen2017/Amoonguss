@@ -1,7 +1,7 @@
 from scipy.ndimage.morphology import binary_fill_holes
 # from scipy.ndimage import generate_binary_structure
 # from scipy.ndimage.morphology import binary_closing
-from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes
+from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes, label
 
 import nibabel as nib
 import numpy as np
@@ -21,10 +21,16 @@ def generate_mask(mri_data, value_threshold, guassian_threshold, dilation_radius
     # Apply threshold: create a binary mask where values greater than threshold are set to 1
     binary_mask = np.where(mri_img > value_threshold, 1, 0)
 
-    # For each axial slice, fill the holes
+    # For each axial slice, fill the holes and only keep the largest connected region
     filled_mask = np.zeros_like(binary_mask)
     for i in range(binary_mask.shape[2]):  # assuming axial direction is the third dimension
-        filled_mask[:,:,i] = binary_fill_holes(binary_mask[:,:,i])
+        slice_mask = binary_fill_holes(binary_mask[:,:,i])
+        
+        labeled_mask, num_labels = label(slice_mask)
+        largest_label = np.argmax([np.sum(labeled_mask == j) for j in range(1, num_labels+1)]) + 1
+        
+        filled_mask[:,:,i] = (labeled_mask == largest_label)
+
 
     # Dilate the filled mask
     dilated_mask = binary_dilation(filled_mask, iterations=dilation_radius)
