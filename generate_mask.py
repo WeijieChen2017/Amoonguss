@@ -61,6 +61,6 @@ for mri_path in mri_paths_list:
         guassian_threshold=0.9,
     )
     mask_file = nib.Nifti1Image(mri_mask, mri_file.affine, mri_file.header)
-    mask_path = mri_path.replace("mr.nii.gz", "mask_mri_th150.nii.gz")
+    mask_path = mri_path.replace("mr.nii.gz", "mask_mri_th60.nii.gz")
     nib.save(mask_file, mask_path)
     print("mask_path: ", mask_path)
