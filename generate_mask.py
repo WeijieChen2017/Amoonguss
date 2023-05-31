@@ -22,6 +22,16 @@ def generate_mask(mri_data, value_threshold, guassian_threshold, dilation_radius
     # Apply threshold: create a binary mask where values greater than threshold are set to 1
     binary_mask = np.where(mri_img > value_threshold, 1, 0)
 
+    # Dilate the filled mask
+    dilated_mask = binary_dilation(binary_mask, iterations=dilation_radius)
+
+    # Apply gaussian filter (blur)
+    blurred_mask = gaussian_filter(np.float32(dilated_mask), sigma=blur_radius)
+
+    # Re-threshold to keep the mask binary
+    binary_mask = np.where(blurred_mask > guassian_threshold, 1, 0)  # Assuming values in the mask are 0 or 1
+
+
     # For each axial slice, fill the holes and only keep the largest connected region
     filled_mask = np.zeros_like(binary_mask)
     for i in range(binary_mask.shape[2]):  # assuming axial direction is the third dimension
@@ -33,16 +43,7 @@ def generate_mask(mri_data, value_threshold, guassian_threshold, dilation_radius
             largest_label = np.argmax([np.sum(labeled_mask == j) for j in range(1, num_labels+1)]) + 1
             filled_mask[:,:,i] = (labeled_mask == largest_label)
 
-    # Dilate the filled mask
-    dilated_mask = binary_dilation(filled_mask, iterations=dilation_radius)
-
-    # Apply gaussian filter (blur)
-    blurred_mask = gaussian_filter(np.float32(dilated_mask), sigma=blur_radius)
-
-    # Re-threshold to keep the mask binary
-    final_mask = np.where(blurred_mask > guassian_threshold, 1, 0)  # Assuming values in the mask are 0 or 1
-
-    return final_mask
+    return filled_mask
 
 for mri_path in mri_paths_list:
     print("mri_path: ", mri_path)
