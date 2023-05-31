@@ -1,6 +1,7 @@
-import numpy as np
+from scipy.ndimage.morphology import binary_closing, binary_fill_holes
+from scipy.ndimage import generate_binary_structure
 import nibabel as nib
-from scipy.ndimage import binary_fill_holes
+import numpy as np
 
 import os
 import glob
@@ -10,7 +11,7 @@ import glob
 data_folder = "./data_dir/Task1/brain/"
 mri_paths_list = sorted(glob.glob(data_folder+"*/mr.nii.gz"))
 
-def generate_mask(mri_data, threshold):
+def generate_mask(mri_data, threshold, smoothing_radius=3):
     # Load the MRI image 
     mri_img = mri_data
 
@@ -22,7 +23,13 @@ def generate_mask(mri_data, threshold):
     for i in range(binary_mask.shape[2]):  # assuming axial direction is the third dimension
         filled_mask[:,:,i] = binary_fill_holes(binary_mask[:,:,i])
 
-    return filled_mask
+    # Define the structuring element for morphological operation, here we use a ball (3D) shape
+    struct = generate_binary_structure(3, 2)  # 3D, connectivity=2
+
+    # Apply morphological closing operation for smoothing edges
+    smoothed_mask = binary_closing(filled_mask, structure=struct, iterations=smoothing_radius)
+
+    return smoothed_mask
 
 for mri_path in mri_paths_list:
     print("mri_path: ", mri_path)
