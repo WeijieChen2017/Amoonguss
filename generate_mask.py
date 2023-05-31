@@ -28,10 +28,10 @@ def generate_mask(mri_data, value_threshold, guassian_threshold, dilation_radius
         slice_mask = binary_fill_holes(binary_mask[:,:,i])
         
         labeled_mask, num_labels = label(slice_mask)
-        largest_label = np.argmax([np.sum(labeled_mask == j) for j in range(1, num_labels+1)]) + 1
-        
-        filled_mask[:,:,i] = (labeled_mask == largest_label)
 
+        if num_labels > 0:  # only proceed if there are labels
+            largest_label = np.argmax([np.sum(labeled_mask == j) for j in range(1, num_labels+1)]) + 1
+            filled_mask[:,:,i] = (labeled_mask == largest_label)
 
     # Dilate the filled mask
     dilated_mask = binary_dilation(filled_mask, iterations=dilation_radius)
