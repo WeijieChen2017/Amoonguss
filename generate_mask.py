@@ -33,7 +33,7 @@ def generate_mask(mri_data, threshold, dilation_radius=3, blur_radius=2):
     blurred_mask = gaussian_filter(np.float32(dilated_mask), sigma=blur_radius)
 
     # Re-threshold to keep the mask binary
-    final_mask = np.where(blurred_mask > 0.75, 1, 0)  # Assuming values in the mask are 0 or 1
+    final_mask = np.where(blurred_mask > 0.9, 1, 0)  # Assuming values in the mask are 0 or 1
 
     return final_mask
 
