@@ -143,7 +143,7 @@ train_transforms = Compose(
         Orientationd(keys=["MR", "CT", "MASK_MR"], axcodes="RAS"),
         Spacingd(
             keys=["MR", "CT", "MASK_MR"],
-            pixdim=(1., 1, 1),
+            pixdim=(1., 1., 1.),
             mode=("bilinear", "bilinear", "nearest"),
         ),
         ScaleIntensityRanged(
@@ -227,7 +227,7 @@ val_transforms = Compose(
         SpatialPadd(
             keys=["MR", "CT", "MASK_MR"],
             spatial_size=(288, 288, 288) if train_dict["organ"] == "brain" else (640, 440, 160),
-            mode=("constant", "constant"),
+            mode=("constant", "constant", "constant"),
         ),
         # CropForegroundd(
         #     keys=["MR", "CT", "MASK"],
