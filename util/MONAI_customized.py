@@ -161,8 +161,7 @@ def create_nfold_json_v3b(data_json, nfold, random_seed, save_dir):
             json.dump(fold_data, outfile)
 
 
-
-def create_nfold_json_MRMASK(data_json, nfold, random_seed, save_dir):
+def create_nfold_json_MASK_MR(data_json, nfold, random_seed, save_dir):
     # Load the JSON data
     with open(data_json, "r") as f:
         data = json.load(f)
