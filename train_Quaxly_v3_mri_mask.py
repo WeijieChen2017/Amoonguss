@@ -5,8 +5,8 @@ import numpy as np
 model_list = [
     ["Quaxly_brain_v3mri_mask", [3], 912, 6, 0],
     ["Quaxly_brain_v3mri_mask", [3], 912, 6, 1],
-    ["Quaxly_brain_v3mri_mask", [5], 912, 6, 2], # dgx2
-    ["Quaxly_brain_v3mri_mask", [5], 912, 6, 3], # dgx2
+    ["Quaxly_brain_v3mri_mask", [4], 912, 6, 2], # dgx2
+    ["Quaxly_brain_v3mri_mask", [4], 912, 6, 3], # dgx2
     ["Quaxly_brain_v3mri_mask", [5], 912, 6, 4],
     ["Quaxly_brain_v3mri_mask", [5], 912, 6, 5],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 0],
@@ -50,7 +50,7 @@ train_dict["GROWTH_epochs"] = [
 ]
 
 # train_dict["train_epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
-train_dict["train_epochs"] = 10500
+train_dict["train_epochs"] = 10000
 train_dict["eval_per_epochs"] = 100
 train_dict["save_per_epochs"] = 1000
 train_dict["continue_training_epoch"] = 0
@@ -69,7 +69,7 @@ train_dict["model_para"] = unet_dict
 
 train_dict["opt_betas"] = (0.9, 0.999) # default
 train_dict["opt_eps"] = 1e-8 # default
-train_dict["opt_lr"] = 1e-2 # default
+train_dict["opt_lr"] = 1e-3 # default
 train_dict["opt_weight_decay"] = 0.01 # default
 train_dict["amsgrad"] = False # default
 
@@ -118,7 +118,8 @@ from monai.transforms import (
 from util import (
     CustomNormalize,
     AddRicianNoise,
-    create_nfold_json,
+    # create_nfold_json,
+    create_nfold_json_MRMASK,
 )
 
 from monai.config import print_config
@@ -137,13 +138,13 @@ print(root_dir)
 
 train_transforms = Compose(
     [
-        LoadImaged(keys=["MR", "CT"]),
-        EnsureChannelFirstd(keys=["MR", "CT"]),
-        Orientationd(keys=["MR", "CT"], axcodes="RAS"),
+        LoadImaged(keys=["MR", "CT", "MASK_MR"]),
+        EnsureChannelFirstd(keys=["MR", "CT", "MASK_MR"]),
+        Orientationd(keys=["MR", "CT", "MASK_MR"], axcodes="RAS"),
         Spacingd(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             pixdim=(1., 1, 1),
-            mode=("bilinear", "bilinear"),
+            mode=("bilinear", "bilinear", "nearest"),
         ),
         ScaleIntensityRanged(
             keys=["MR"],
@@ -170,28 +171,28 @@ train_transforms = Compose(
         #     return_transform=False,
         # ),
         RandSpatialCropSamplesd(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             num_samples = 4, 
             roi_size=train_dict["input_size"], 
             random_size=False,
         ),
         RandFlipd(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             spatial_axis=[0],
             prob=0.10,
         ),
         RandFlipd(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             spatial_axis=[1],
             prob=0.10,
         ),
         RandFlipd(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             spatial_axis=[2],
             prob=0.10,
         ),
         RandRotate90d(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             prob=0.10,
             max_k=3,
         ),
@@ -199,13 +200,13 @@ train_transforms = Compose(
 )
 val_transforms = Compose(
     [
-        LoadImaged(keys=["MR", "CT"]),
-        EnsureChannelFirstd(keys=["MR", "CT"]),
-        Orientationd(keys=["MR", "CT"], axcodes="RAS"),
+        LoadImaged(keys=["MR", "CT", "MASK_MR"]),
+        EnsureChannelFirstd(keys=["MR", "CT", "MASK_MR"]),
+        Orientationd(keys=["MR", "CT", "MASK_MR"], axcodes="RAS"),
         Spacingd(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             pixdim=(1, 1, 1),
-            mode=("bilinear", "bilinear"),
+            mode=("bilinear", "bilinear", "nearest"),
         ),
         ScaleIntensityRanged(
             keys=["MR"],
@@ -224,7 +225,7 @@ val_transforms = Compose(
             clip=True,
         ),
         SpatialPadd(
-            keys=["MR", "CT"],
+            keys=["MR", "CT", "MASK_MR"],
             spatial_size=(288, 288, 288) if train_dict["organ"] == "brain" else (640, 440, 160),
             mode=("constant", "constant"),
         ),
@@ -245,11 +246,12 @@ val_transforms = Compose(
 )
 
 data_dir = "./data_dir/Task1/"
-data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else data_dir+"pelvis.json"
+# data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else data_dir+"pelvis.json"
+data_json = data_dir+"task1_mri_mask.json"
 print("data_json: ", data_json)
 curr_fold = train_dict["current_fold"]
 if train_dict["current_fold"] == 0:
-    create_nfold_json(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
+    create_nfold_json_MRMASK(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
 
 # n_stage = len(train_dict["GROWTH_epochs"])
 n_fold = train_dict["num_fold"]
@@ -331,8 +333,8 @@ class CustomCosineAnnealingWarmRestarts(_LRScheduler):
         super().step(epoch)
 
 # Create the custom scheduler
-T_0 = 500  # The number of epochs for the first restart
-scheduler = CustomCosineAnnealingWarmRestarts(optimizer, T_0, T_mult=1, eta_min=1e-4)
+T_0 = 1000  # The number of epochs for the first restart
+scheduler = CustomCosineAnnealingWarmRestarts(optimizer, T_0, T_mult=1, eta_min=5e-5)
 
 criterion = SmoothL1Loss()
 
@@ -363,7 +365,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     print("Training: ", curr_iter, "iterations")
     case_loss = np.zeros((curr_iter, 1))
     for step, batch in enumerate(train_loader):
-        mr, ct = (batch["MR"].float().to(device), batch["CT"].float().to(device))
+        mr, ct, mask_mr = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK_MR"].float().to(device))
         # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
         # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
         print(" ===> Train:Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
@@ -375,7 +377,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         loss_ds_2 = criterion(ct, ds_2)
         loss_ds_3 = criterion(ct, ds_3)
         loss = loss_out + loss_ds_1 + loss_ds_2 + loss_ds_3
-        # final_loss = torch.sum(loss * mask) / torch.sum(mask)
+        final_loss = torch.sum(loss * mask_mr) / torch.sum(mask_mr)
         final_loss = loss
         final_loss.backward()
         optimizer.step()
@@ -394,7 +396,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         print("Validation: ", curr_iter, "iterations")
         case_loss = np.zeros((curr_iter, 1))
         for step, batch in enumerate(val_loader):
-            mr, ct = (batch["MR"].float().to(device), batch["CT"].float().to(device))
+            mr, ct, mask_mr = (batch["MR"].float().to(device), batch["CT"].float().to(device), batch["MASK_MR"].float().to(device))
             # mr, ct, mask = (batch["MR"], batch["CT"], batch["MASK"])
             # print("step[", step, "]mr", mr.shape, "ct", ct.shape, "mask", mask.shape)
             print(" ===> Validation: Epoch[{:03d}]:[{:03d}]/[{:03d}] --->".format(idx_epoch+1, step, curr_iter), end="")
@@ -414,8 +416,8 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
                 device=device,
                 )
                 loss = criterion(ct, sct)
-                # final_loss = torch.sum(loss * mask) / torch.sum(mask)
-                final_loss = loss
+                final_loss = torch.sum(loss * mask_mr) / torch.sum(mask_mr)
+                # final_loss = loss
                 case_loss[step] = final_loss.item()
             print("Loss: ", case_loss[step])
             np.save(train_dict["save_folder"]+"loss/fold_{:02d}_val_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
@@ -441,10 +443,12 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         mr_cache = mr.detach().cpu().numpy()
         ct_cache = ct.detach().cpu().numpy()
         sct_cache = sct.detach().cpu().numpy()
+        mask_mr_cache = mask_mr.detach().cpu().numpy()
         sample_cache = {
             "MR": mr_cache,
             "CT": ct_cache,
             "SCT": sct_cache,
+            "MASK_MR": mask_mr_cache,
         }
         np.save(train_dict["save_folder"]+"sample_cache/fold_{:02d}_sample_{:04d}.npy".format(curr_fold, idx_epoch+1), sample_cache)
         print("Sample saved at epoch {:03d}".format(idx_epoch+1))
