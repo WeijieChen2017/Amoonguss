@@ -251,7 +251,7 @@ data_json = data_dir+"task1_mri_mask.json"
 print("data_json: ", data_json)
 curr_fold = train_dict["current_fold"]
 if train_dict["current_fold"] == 0:
-    create_nfold_json_MRMASK(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
+    create_nfold_json_MASK_MR(data_json, train_dict["num_fold"], train_dict["random_seed"], train_dict["save_folder"])
 
 # n_stage = len(train_dict["GROWTH_epochs"])
 n_fold = train_dict["num_fold"]
