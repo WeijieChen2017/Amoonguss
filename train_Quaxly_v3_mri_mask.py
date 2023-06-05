@@ -119,7 +119,7 @@ from util import (
     CustomNormalize,
     AddRicianNoise,
     # create_nfold_json,
-    create_nfold_json_MRMASK,
+    create_nfold_json_MASK_MR,
 )
 
 from monai.config import print_config
