@@ -172,7 +172,7 @@ train_transforms = Compose(
         # ),
         RandSpatialCropSamplesd(
             keys=["MR", "CT", "MASK_MR"],
-            num_samples = 32, 
+            num_samples = 8, 
             roi_size=train_dict["input_size"], 
             random_size=False,
         ),
