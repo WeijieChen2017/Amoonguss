@@ -272,14 +272,14 @@ train_ds = CacheDataset(
     transform=train_transforms,
     # cache_num=24,
     cache_rate=0.5,
-    num_workers=8,
+    num_workers=4,
 )
 val_ds = CacheDataset(
     data=val_files, 
     transform=val_transforms, 
     # cache_num=6, 
     cache_rate=0.5, 
-    num_workers=4,
+    num_workers=2,
 )
 
 model = UNet_Quaxly( 
