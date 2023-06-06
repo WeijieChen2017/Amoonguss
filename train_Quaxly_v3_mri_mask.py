@@ -271,14 +271,14 @@ train_ds = CacheDataset(
     data=train_files,
     transform=train_transforms,
     # cache_num=24,
-    cache_rate=1.0,
+    cache_rate=0.5,
     num_workers=8,
 )
 val_ds = CacheDataset(
     data=val_files, 
     transform=val_transforms, 
     # cache_num=6, 
-    cache_rate=1.0, 
+    cache_rate=0.5, 
     num_workers=4,
 )
 
