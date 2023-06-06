@@ -27,14 +27,14 @@ data = {
 build_tree(your_folder_path, data)
 
 # create a "task1" key in data dict to combine brain and pelvis data with the same key
-data["task1"] = {key: data["brain"][key] + data["pelvis"][key] for key in ["MR", "CT", "MASK_MR"]}
+# data["task1"] = {key: data["brain"][key] + data["pelvis"][key] for key in ["MR", "CT", "MASK_MR"]}
 
 # Save brain_data and pelvis_data as JSON files
-# with open(your_folder_path+"brain.json", "w") as outfile:
-#     json.dump(data["brain"], outfile)
+with open(your_folder_path+"brain_mri_mask.json", "w") as outfile:
+    json.dump(data["brain"], outfile)
 
 # with open(your_folder_path+"pelvis.json", "w") as outfile:
 #     json.dump(data["pelvis"], outfile)
 
-with open(your_folder_path+"brain_mri_mask.json", "w") as outfile:
-    json.dump(data["task1"], outfile)
+# with open(your_folder_path+"brain_mri_mask.json", "w") as outfile:
+#     json.dump(data["task1"], outfile)
