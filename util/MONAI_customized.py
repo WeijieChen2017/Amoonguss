@@ -190,7 +190,7 @@ def create_nfold_json_MASK_MR(data_json, nfold, random_seed, save_dir):
         for filepath in files:
             case_id = os.path.dirname(filepath)
             file_type = os.path.basename(filepath).lower()
-            print(file_type)
+            # print(file_type)
             if file_type == "mr.nii.gz":
                 case_dict[case_id]["MR"] = filepath
             elif file_type == "ct.nii.gz":

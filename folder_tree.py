@@ -16,11 +16,12 @@ def build_tree(folder, data):
 
 
 # Replace 'your_folder_path' with the path to your folder
-your_folder_path = './data_dir/Task1/'
+# your_folder_path = './data_dir/Task1/'
+your_folder_path = './data_dir/Task1/brain'
 
 data = {
     "brain": {"MR": [], "CT": [], "MASK_MR": []},
-    "pelvis": {"MR": [], "CT": [], "MASK_MR": []}
+    # "pelvis": {"MR": [], "CT": [], "MASK_MR": []}
 }
 
 build_tree(your_folder_path, data)
@@ -35,5 +36,5 @@ data["task1"] = {key: data["brain"][key] + data["pelvis"][key] for key in ["MR",
 # with open(your_folder_path+"pelvis.json", "w") as outfile:
 #     json.dump(data["pelvis"], outfile)
 
-with open(your_folder_path+"task1_mri_mask.json", "w") as outfile:
+with open(your_folder_path+"brain_mri_mask.json", "w") as outfile:
     json.dump(data["task1"], outfile)
