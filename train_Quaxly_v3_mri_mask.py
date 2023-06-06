@@ -3,10 +3,10 @@ import time
 import numpy as np
 
 model_list = [
-    ["Quaxly_brain_v3mri_mask", [3], 912, 6, 0],
-    ["Quaxly_brain_v3mri_mask", [3], 912, 6, 1],
-    ["Quaxly_brain_v3mri_mask", [4], 912, 6, 2], # dgx2
-    ["Quaxly_brain_v3mri_mask", [4], 912, 6, 3], # dgx2
+    ["Quaxly_brain_v3mri_mask", [1], 912, 6, 0],
+    ["Quaxly_brain_v3mri_mask", [1], 912, 6, 1],
+    ["Quaxly_brain_v3mri_mask", [3], 912, 6, 2],
+    ["Quaxly_brain_v3mri_mask", [3], 912, 6, 3],
     ["Quaxly_brain_v3mri_mask", [5], 912, 6, 4],
     ["Quaxly_brain_v3mri_mask", [5], 912, 6, 5],
     # ["Quaxly_pelvis_v2", [5], 912, 5, 0],
@@ -247,7 +247,7 @@ val_transforms = Compose(
 
 data_dir = "./data_dir/Task1/"
 # data_json = data_dir+"brain.json" if train_dict["organ"] == "brain" else data_dir+"pelvis.json"
-data_json = data_dir+"task1_mri_mask.json"
+data_json = data_dir+"brain_mri_mask.json"
 print("data_json: ", data_json)
 curr_fold = train_dict["current_fold"]
 if train_dict["current_fold"] == 0:
