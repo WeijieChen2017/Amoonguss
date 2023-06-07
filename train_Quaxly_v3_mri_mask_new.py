@@ -21,7 +21,7 @@ current_model_idx = args.model_number - 1
 model_list = [
     ["Quaxly_brain_v3mri_mask", [1], 912, 6, 0],
     ["Quaxly_brain_v3mri_mask", [0], 912, 6, 1],
-    ["Quaxly_brain_v3mri_mask", [4], 912, 6, 2],
+    ["Quaxly_brain_v3mri_mask", [3], 912, 6, 2],
     ["Quaxly_brain_v3mri_mask", [3], 912, 6, 3],
     ["Quaxly_brain_v3mri_mask", [5], 912, 6, 4],
     ["Quaxly_brain_v3mri_mask", [5], 912, 6, 5],
