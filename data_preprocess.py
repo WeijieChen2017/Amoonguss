@@ -25,6 +25,7 @@ for modality_list, folder_path in zip(folder_list, folder_new_list):
 
     for file_path in modality_list:
         # file_path = ./data_dir/Task1/brain/1BA001/mr.nii.gz
+        print("<>")
         organ_name = file_path.split(os.sep)[3]
         case_num = file_path.split(os.sep)[4]
         new_filename = f"{organ_name}_{case_num}.nii.gz"
@@ -32,7 +33,8 @@ for modality_list, folder_path in zip(folder_list, folder_new_list):
         print(file_path, "->", new_filepath)
         os_cmd = f"cp {file_path} {new_filepath}"
         print("os_cmd:", os_cmd)
-        # os.system(os_cmd)
+        os.system(os_cmd)
+        print("<>")
 
 # # MR_range_min = []
 # # MR_range_max = []
