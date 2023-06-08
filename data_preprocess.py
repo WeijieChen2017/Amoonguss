@@ -3,10 +3,12 @@ import numpy as np
 import os
 import glob
 
-MR_list = sorted(glob.glob("./data_dir/Task1/*/*/mr.nii.gz"))
-CT_list = sorted(glob.glob("./data_dir/Task1/*/*/ct.nii.gz"))
-MASK_list = sorted(glob.glob("./data_dir/Task1/*/*/mask.nii.gz"))
-MASK_MR_list = sorted(glob.glob("./data_dir/Task1/*/*/mask_mri_th60.nii.gz"))
+organ = "brain"
+
+MR_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/mr.nii.gz"))
+CT_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/ct.nii.gz"))
+MASK_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/mask.nii.gz"))
+MASK_MR_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/mask_mri_th60.nii.gz"))
 
 folder_list = [MR_list, CT_list, MASK_list, MASK_MR_list]
 
@@ -23,9 +25,9 @@ for modality_list, folder_path in zip(folder_list, folder_new_list):
 
     for file_path in modality_list:
         # file_path = ./data_dir/Task1/brain/1BA001/mr.nii.gz
-        organ = file_path.split(os.sep)[3]
+        organ_name = file_path.split(os.sep)[3]
         case_num = file_path.split(os.sep)[4]
-        new_filename = f"{organ}_{case_num}.nii.gz"
+        new_filename = f"{organ_name}_{case_num}.nii.gz"
         new_filepath = folder_path + new_filename
         print(file_path, "->", new_filepath)
         os_cmd = f"cp {file_path} {new_filepath}"
