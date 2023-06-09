@@ -51,17 +51,18 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 train_dict["optimizer"] = "AdamW"
 train_dict["save_folder"] = "./project_dir/"+train_dict["project_name"]+"/"
 train_dict["input_size"] = (64, 64, 64)
+train_dict["batch_size"] = 16
 
-train_dict["GROWTH_epochs"] = [
-    {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 25, "batch" : 32, "lr": 1e-3, "loss": "l2",},
-    {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 7e-4, "loss": "l2",},
-    {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 75, "batch" : 16, "lr": 5e-4, "loss": "l1",},
-    {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 3e-4, "loss": "l1",},
-    {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
-]
+# train_dict["GROWTH_epochs"] = [
+#     {"stage": 0, "model_channels": (8, 16, 32, 64), "epochs" : 25, "batch" : 32, "lr": 1e-3, "loss": "l2",},
+#     {"stage": 1, "model_channels": (16, 32, 64, 128), "epochs" : 50, "batch" : 32, "lr": 7e-4, "loss": "l2",},
+#     {"stage": 2, "model_channels": (24, 48, 96, 192), "epochs" : 75, "batch" : 16, "lr": 5e-4, "loss": "l1",},
+#     {"stage": 3, "model_channels": (32, 64, 128, 256), "epochs" : 100, "batch" : 16, "lr": 3e-4, "loss": "l1",},
+#     {"stage": 4, "model_channels": (40, 80, 160, 320), "epochs" : 150, "batch" : 8, "lr": 1e-4, "loss": "l1",},    
+# ]
 
 # train_dict["train_epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
-train_dict["train_epochs"] = 10000
+train_dict["train_epochs"] = 5000
 train_dict["eval_per_epochs"] = 100
 train_dict["save_per_epochs"] = 1000
 train_dict["continue_training_epoch"] = 0
@@ -99,7 +100,7 @@ for path in folders_to_create:
 from torch.nn import SmoothL1Loss
 from model import UNet_Quaxly
 from torch.optim import lr_scheduler
-from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, _LRScheduler
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts, _LRScheduler, CosineAnnealingLR
 
 import os
 import json
@@ -320,32 +321,33 @@ optimizer = torch.optim.AdamW(
 #     eta_min=1e-5,
 # )
 
-def custom_coefficient(x: int) -> float:
-    # return 10^(-x/3750) using numpy
-    # (2000*5+2000*10+2000*19+2000*38+2000*76) ~= 300000 = 3e5
-    return np.power(10, -x/1.5e5)
+# def custom_coefficient(x: int) -> float:
+#     # return 10^(-x/3750) using numpy
+#     # (2000*5+2000*10+2000*19+2000*38+2000*76) ~= 300000 = 3e5
+#     return np.power(10, -x/1.5e5)
 
-class CustomCosineAnnealingWarmRestarts(_LRScheduler):
-    def __init__(self, optimizer, T_0, T_mult=1, eta_min=0, last_epoch=-1, verbose=False):
-        self.base_scheduler = CosineAnnealingWarmRestarts(optimizer, T_0, T_mult, eta_min, last_epoch, verbose)
-        super(CustomCosineAnnealingWarmRestarts, self).__init__(optimizer, last_epoch, verbose)
+# class CustomCosineAnnealingWarmRestarts(_LRScheduler):
+#     def __init__(self, optimizer, T_0, T_mult=1, eta_min=0, last_epoch=-1, verbose=False):
+#         self.base_scheduler = CosineAnnealingWarmRestarts(optimizer, T_0, T_mult, eta_min, last_epoch, verbose)
+#         super(CustomCosineAnnealingWarmRestarts, self).__init__(optimizer, last_epoch, verbose)
 
-    def get_lr(self):
-        # Get the learning rates from the base scheduler
-        base_lrs = self.base_scheduler.get_lr()
+#     def get_lr(self):
+#         # Get the learning rates from the base scheduler
+#         base_lrs = self.base_scheduler.get_lr()
 
-        # Multiply the learning rates with the custom coefficient
-        coeff = custom_coefficient(self.last_epoch)
-        return [lr * coeff for lr in base_lrs]
+#         # Multiply the learning rates with the custom coefficient
+#         coeff = custom_coefficient(self.last_epoch)
+#         return [lr * coeff for lr in base_lrs]
 
-    def step(self, epoch=None):
-        # Update the base scheduler's epoch counter
-        self.base_scheduler.step(epoch)
-        super().step(epoch)
+#     def step(self, epoch=None):
+#         # Update the base scheduler's epoch counter
+#         self.base_scheduler.step(epoch)
+#         super().step(epoch)
 
 # Create the custom scheduler
-T_0 = 1000  # The number of epochs for the first restart
-scheduler = CustomCosineAnnealingWarmRestarts(optimizer, T_0, T_mult=1, eta_min=5e-5)
+# T_0 = 1000  # The number of epochs for the first restart
+# scheduler = CustomCosineAnnealingWarmRestarts(optimizer, T_0, T_mult=1, eta_min=5e-5)
+scheduler = CosineAnnealingLR(optimizer, T_max=5000, eta_min=5e-5)
 
 criterion = SmoothL1Loss()
 
@@ -365,11 +367,16 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
 
     # check the idx_epoch to determine the batch size
     #                 32,   16,    8,    4,    2,     1
-    if idx_epoch in [0, 2000, 4000, 6000, 8000, 10000, ]:
-        batch_stage = 5 - idx_epoch // train_dict["batch_decay"]
-        batch_size = 2 ** batch_stage
-        train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
-        val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=4, pin_memory=True)
+    # if idx_epoch in [0, 1000, 2000, 3000, 4000, 5000, ]:
+    #     batch_stage = 5 - idx_epoch // train_dict["batch_decay"]
+    #     batch_size = 2 ** batch_stage
+    #     train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
+    #     val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=4, pin_memory=True)
+
+    batch_size = train_dict["batch_size"]
+    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+    val_loader = DataLoader(val_ds, batch_size=1, shuffle=False, num_workers=2, pin_memory=True)
+
 
     # training
     model.train()
@@ -397,8 +404,8 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         case_loss[step] = final_loss.item()
         # current_lr = scheduler.get_last_lr()[0]
         # print(f" lr:{current_lr}")
-        scheduler.step()
-        step += 1
+        # step += 1
+    scheduler.step()
 
 
     loss_batch_to_save.append(case_loss)
@@ -444,7 +451,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
             # np.save(train_dict["save_folder"]+"loss/fold_{:02d}_val_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
             loss_batch_to_save.append(case_loss)
             # loss_batch_to_save
-            step += 1
+            # step += 1
         
         loss_to_save["val"].append(loss_batch_to_save)
 
