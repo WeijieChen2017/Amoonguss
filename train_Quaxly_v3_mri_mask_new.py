@@ -411,7 +411,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
     loss_batch_to_save.append(case_loss)
     loss_to_save["train"].append(loss_batch_to_save)
     current_lr = scheduler.get_last_lr()[0]
-    print(" ===> Train:Epoch[{:03d}]: Iter{:03d}, Loss{:}, lr:{:}".format(idx_epoch+1, curr_iter, np.mean(case_loss), current_lr))
+    print(" ===> Train:Epoch[{:04d}]: Iter: {:03d}, Loss: {:06f}, lr:{:06f}".format(idx_epoch+1, curr_iter, np.mean(case_loss), current_lr))
         # print("Loss: ", case_loss[step], end="")
         
         # np.save(train_dict["save_folder"]+"loss/fold_{:02d}_train_{:04d}.npy".format(curr_fold, idx_epoch+1), case_loss)
@@ -456,7 +456,7 @@ for idx_epoch_new in range(train_dict["train_epochs"]):
         loss_to_save["val"].append(loss_batch_to_save)
 
         curr_mae = np.mean(case_loss) * 4024
-        print(" ===> Validation: Epoch[{:03d}]: Iter{:03d}, Loss{:}".format(idx_epoch+1, curr_iter, np.mean(case_loss)), end="")
+        print(" ===> Validation: Epoch[{:04d}]: Iter:{:03d}, Loss:{:06f}".format(idx_epoch+1, curr_iter, np.mean(case_loss)), end="")
         print("Curr MAE: ", curr_mae, "Best MAE: ", best_val_loss, "Best Epoch: ", best_epoch)
         if curr_mae < best_val_loss:
             best_val_loss = curr_mae
