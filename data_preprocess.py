@@ -34,7 +34,6 @@ for modality_list, folder_path in zip(folder_list, folder_new_list):
         os_cmd = f"cp {file_path} {new_filepath}"
         print("os_cmd:", os_cmd)
         os.system(os_cmd)
-        print("<>")
 
 # # MR_range_min = []
 # # MR_range_max = []
