@@ -87,9 +87,14 @@ root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 for idx_fold in [0,3]:
     curr_fold = idx_fold
     split_json = root_dir + f"official_fold_{curr_fold + 1}.json"
+    # mask_mr_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
         datasets = json.load(f)
         val_files = datasets["validation"]
+    
+    # with open(mask_mr_json, "r") as f:
+    #     datasets = json.load(f)
+    #     mask_mr_files = datasets["validation"]
 
     # test for the best model
     best_model = root_dir + "model/fold_{:02d}_model_best.pth".format(curr_fold)
@@ -115,7 +120,7 @@ for idx_fold in [0,3]:
         mr_path = val_case["MR"]
         ct_path = val_case["CT"]
         mask_path = val_case["MASK"]
-        mask_mr_path = mask_path.replace("mask.nii.gz", "mask_mr_th60.nii.gz")
+        mask_mr_path = mask_path.replace("mask.nii.gz", "mask_mri_th60.nii.gz")
         mr_file = nib.load(mr_path)
         ct_file = nib.load(ct_path)
         mask_file = nib.load(mask_path)
