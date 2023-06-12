@@ -115,9 +115,11 @@ for idx_fold in [0,3]:
         mr_path = val_case["MR"]
         ct_path = val_case["CT"]
         mask_path = val_case["MASK"]
+        mask_mr_path = mask_path.replace("mask.nii.gz", "mask_mr_th60.nii.gz")
         mr_file = nib.load(mr_path)
         ct_file = nib.load(ct_path)
         mask_file = nib.load(mask_path)
+        mask_mr_file = nib.load(mask_mr_path)
         # mr_path is like ./data_dir/Task_1/brain/1BA001/mr.nii.gz
         organ_case = mr_path.split("/")[-3]+"_"+mr_path.split("/")[-2]
         print("Loaded: ", mr_path, end="<--->")
@@ -125,6 +127,7 @@ for idx_fold in [0,3]:
         mr_data = mr_file.get_fdata()
         ct_data = ct_file.get_fdata()
         mask_data = mask_file.get_fdata()
+        mask_mr_data = mask_mr_file.get_fdata()
 
         mr_data = mr_data / 3000
         input_data = np.expand_dims(mr_data, (0,1))
@@ -145,13 +148,15 @@ for idx_fold in [0,3]:
         )
 
         sct = np.squeeze(sct.cpu().detach().numpy()) # 0->1
-        sct = sct * mask_data # 0->1
+        # sct = sct * mask_data # 0->1
+        sct = sct * mask_mr_data # 0->1
         sct = sct * 4024 - 1024 # -1024->3000
         ct = (ct_data + 1024)/4024 # 0->1
         ct = ct * mask_data
         ct = ct * 4024 - 1024 # -1024 -> 3000
         sct = np.clip(sct, -1024, 3000)
         ct = np.clip(ct, -1024, 3000)
+        
 
 
         masked_mae = np.sum(np.abs(ct - sct)) / np.sum(mask_data)
