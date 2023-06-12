@@ -7,6 +7,7 @@ import nibabel as nib
 model_list = [
     ["Quaxly_brain_v3a", [1], 912, 6, 0],
     ["Quaxly_pelvis_v2", [1], 912, 6, 0],
+    ["Quaxly_brain_v3mri_mask", [3], 912, 6, 1],
 ]
 
 print("Model index: ", end="")
@@ -83,7 +84,7 @@ root_dir = "./project_dir/"+train_dict["project_name"]+"/"
 
 # for idx_fold in range(n_fold):
 # for idx_fold in [0,1,4,5]:
-for idx_fold in [2,3]:
+for idx_fold in [0,3]:
     curr_fold = idx_fold
     split_json = root_dir + f"fold_{curr_fold + 1}.json"
     with open(split_json, "r") as f:
