@@ -3,7 +3,7 @@ import numpy as np
 import os
 import glob
 
-organ = "brain"
+organ = "pelvis"
 
 MR_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/mr.nii.gz"))
 CT_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/ct.nii.gz"))
