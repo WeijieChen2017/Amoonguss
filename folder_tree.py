@@ -30,8 +30,8 @@ build_tree(your_folder_path, data)
 # data["task1"] = {key: data["brain"][key] + data["pelvis"][key] for key in ["MR", "CT", "MASK_MR"]}
 
 # Save brain_data and pelvis_data as JSON files
-with open(your_folder_path+"pelvis_mri_mask.json", "w") as outfile:
-    json.dump(data["pelvis"], outfile)
+with open(your_folder_path+"_mri_mask.json", "w") as outfile:
+    json.dump(data["pelvis"], outfile, indent=4)
 
 # with open(your_folder_path+"pelvis.json", "w") as outfile:
 #     json.dump(data["pelvis"], outfile)
