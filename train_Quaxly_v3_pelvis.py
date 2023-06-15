@@ -19,12 +19,12 @@ args = parser.parse_args()
 current_model_idx = args.model_number - 1
 
 model_list = [
-    ["Quaxly_pelvis_v3mri_mask", [0], 912, 6, 0],
-    ["Quaxly_pelvis_v3mri_mask", [0], 912, 6, 1],
-    ["Quaxly_pelvis_v3mri_mask", [3], 912, 6, 2],
-    ["Quaxly_pelvis_v3mri_mask", [3], 912, 6, 3],
-    ["Quaxly_pelvis_v3mri_mask", [5], 912, 6, 4],
-    ["Quaxly_pelvis_v3mri_mask", [5], 912, 6, 5],
+    ["Quaxly_pelvis_v3mri_mask", [1], 912, 6, 0],
+    ["Quaxly_pelvis_v3mri_mask", [3], 912, 6, 1],
+    ["Quaxly_pelvis_v3mri_mask", [5], 912, 6, 2],
+    ["Quaxly_pelvis_v3mri_mask", [7], 912, 6, 3],
+    ["Quaxly_pelvis_v3mri_mask", [9], 912, 6, 4],
+    ["Quaxly_pelvis_v3mri_mask", [9], 912, 6, 5],
 ]
 
 print("Model index: ", end="")
@@ -54,7 +54,7 @@ train_dict["input_size"] = (64, 64, 64)
 train_dict["batch_size"] = 16
 
 # train_dict["train_epochs"] = train_dict["GROWTH_epochs"][3]["epochs"]
-train_dict["train_epochs"] = 3000
+train_dict["train_epochs"] = 5000
 train_dict["eval_per_epochs"] = 100
 train_dict["save_per_epochs"] = 1000
 train_dict["continue_training_epoch"] = 0
@@ -275,14 +275,14 @@ train_ds = CacheDataset(
     data=train_files,
     transform=train_transforms,
     # cache_num=24,
-    cache_rate=0.33,
+    cache_rate=0.5,
     num_workers=3,
 )
 val_ds = CacheDataset(
     data=val_files, 
     transform=val_transforms, 
     # cache_num=6, 
-    cache_rate=0.33, 
+    cache_rate=0.5, 
     num_workers=1,
 )
 
