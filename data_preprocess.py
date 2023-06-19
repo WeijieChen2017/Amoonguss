@@ -3,19 +3,25 @@ import numpy as np
 import os
 import glob
 
-organ = "pelvis"
+task = "Task2"
+organ = "brain"
 
-MR_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/mr.nii.gz"))
-CT_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/ct.nii.gz"))
-MASK_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/mask.nii.gz"))
-MASK_MR_list = sorted(glob.glob(f"./data_dir/Task1/{organ}/*/mask_mri_th60.nii.gz"))
+MR_list = sorted(glob.glob(f"./data_dir/{task}/{organ}/*/cbct.nii.gz"))
+CT_list = sorted(glob.glob(f"./data_dir/{task}/{organ}/*/ct.nii.gz"))
+MASK_list = sorted(glob.glob(f"./data_dir/{task}/{organ}/*/mask.nii.gz"))
+# MASK_MR_list = sorted(glob.glob(f"./data_dir/{task}/{organ}/*/mask_mri_th60.nii.gz"))
 
-folder_list = [MR_list, CT_list, MASK_list, MASK_MR_list]
+# folder_list = [MR_list, CT_list, MASK_list, MASK_MR_list]
+folder_list = [MR_list, CT_list, MASK_list]
 
-folder_new_list = ["./data_dir/t1_mr/",
+# folder_new_list = ["./data_dir/t1_mr/",
+#                "./data_dir/t1_ct/",
+#                "./data_dir/t1_mask/",
+#                "./data_dir/t1_mask_mr/"]
+
+folder_new_list = ["./data_dir/t1_cbct/",
                "./data_dir/t1_ct/",
-               "./data_dir/t1_mask/",
-               "./data_dir/t1_mask_mr/"]
+               "./data_dir/t1_mask/",]
 
 for folder_path in folder_new_list:
     if not os.path.exists(folder_path):
