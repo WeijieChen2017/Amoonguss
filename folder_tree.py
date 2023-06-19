@@ -9,7 +9,7 @@ def build_tree(folder, data):
         if os.path.isfile(entry_path) and entry.lower().endswith(".nii.gz"):
             category = "brain" if "brain" in entry_path.lower() else "pelvis"
             # for key, file_name in zip(["MR", "CT", "MASK_MR"], ["mr.nii.gz", "ct.nii.gz", "mask_mri_th60.nii.gz",]):
-            for key, file_name in zip(["MR", "CT", "MASK"], ["mr.nii.gz", "ct.nii.gz", "mask.nii.gz",]):    
+            for key, file_name in zip(["CBCT", "CT", "MASK"], ["cbct.nii.gz", "ct.nii.gz", "mask.nii.gz",]):    
                 if entry.lower() == file_name:
                     data[category][key].append(entry_path)
         elif os.path.isdir(entry_path):
@@ -21,7 +21,7 @@ def build_tree(folder, data):
 your_folder_path = './data_dir/Task2/brain/'
 
 data = {
-    "brain": {"MR": [], "CT": [], "MASK": []},
+    "brain": {"CBCT": [], "CT": [], "MASK": []},
     # "pelvis": {"MR": [], "CT": [], "MASK_MR": []}
 }
 
@@ -31,7 +31,7 @@ build_tree(your_folder_path, data)
 # data["task1"] = {key: data["brain"][key] + data["pelvis"][key] for key in ["MR", "CT", "MASK_MR"]}
 
 # Save brain_data and pelvis_data as JSON files
-with open(your_folder_path+"_mri_mask.json", "w") as outfile:
+with open(your_folder_path+"brain.json", "w") as outfile:
     json.dump(data["brain"], outfile, indent=4)
 
 # with open(your_folder_path+"pelvis.json", "w") as outfile:
